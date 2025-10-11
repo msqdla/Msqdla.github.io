@@ -1,113 +1,96 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<title>notepad</title>
-</head>
-<style type="text/css">
-ol,ul{
-display:block;
-list-style-type:none;
-margin:3px;
+<meta charset="UTF-8">
+<title>NCE1 L1-3 全部18卡双面（循环页）</title>
+<style>
+@page{ size:A4; margin:0; }
+@media print{
+  html,body{ margin:0; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
 }
-</style><body>
-<div>&lt;!DOCTYPE html&gt;<br>
-&lt;html lang="zh-CN"&gt;<br>
-&lt;head&gt;<br>
-&lt;meta charset="UTF-8"&gt;<br>
-&lt;title&gt;NCE1 L1-3 &#20840;&#37096;18&#21345;&#21452;&#38754;&#65288;&#24490;&#29615;&#39029;&#65289;&lt;/title&gt;<br>
-&lt;style&gt;<br>
-@page{ size:A4; margin:0; }<br>
-@media print{<br>
-&nbsp; html,body{ margin:0; -webkit-print-color-adjust:exact; print-color-adjust:exact; }<br>
-}<br>
-body{ font-family:Arial,Helvetica,"Microsoft YaHei",sans-serif; }<br>
-.page{ width:210mm; height:297mm; position:relative; page-break-after:always; }<br>
-<br>
-.card{ width:62mm; height:45mm; position:absolute; display:flex; flex-direction:column; justify-content:center; align-items:center; background:#fff; }<br>
-<br>
-/* 6&#215;3 &#32593;&#26684; */<br>
-.pos00{ top:5mm; left:5mm; }&nbsp; .pos01{ top:5mm; left:72mm; }&nbsp; .pos02{ top:5mm; left:139mm; }<br>
-.pos03{ top:54mm; left:5mm; } .pos04{ top:54mm; left:72mm; } .pos05{ top:54mm; left:139mm; }<br>
-.pos06{ top:103mm; left:5mm; } .pos07{ top:103mm; left:72mm; } .pos08{ top:103mm; left:139mm; }<br>
-.pos09{ top:152mm; left:5mm; } .pos10{ top:152mm; left:72mm; } .pos11{ top:152mm; left:139mm; }<br>
-.pos12{ top:201mm; left:5mm; } .pos13{ top:201mm; left:72mm; } .pos14{ top:201mm; left:139mm; }<br>
-.pos15{ top:250mm; left:5mm; } .pos16{ top:250mm; left:72mm; } .pos17{ top:250mm; left:139mm; }<br>
-<br>
-.front .word{ font-size:32px; font-weight:bold; color:#036; }<br>
-.front .phonetic{ font-size:16px; color:#555; margin-top:3px; }<br>
-.front .eg{ font-size:12px; color:#333; margin-top:5px; text-align:center; line-height:1.3; max-width:56mm; }<br>
-.back .trans{ font-size:28px; color:#c00; text-align:center; }<br>
-&lt;/style&gt;<br>
-&lt;/head&gt;<br>
-&lt;body&gt;<br>
-<br>
-&lt;script&gt;<br>
-const words = [<br>
-["excuse","/&#618;k&#712;skju&#720;z/","v. &#21407;&#35845;","Excuse me! Yes? Is this your handbag?"],<br>
-["me","/mi&#720;/","pron. &#25105;&#65288;&#23486;&#26684;&#65289;","Excuse me! Yes? Is this your handbag?"],<br>
-["yes","/jes/","int. &#26159;&#30340;","Excuse me! Yes? Is this your handbag?"],<br>
-["is","/&#618;z/","v. be&#21160;&#35789;&#29616;&#22312;&#26102;&#31532;&#19977;&#20154;&#31216;&#21333;&#25968;","Is this your handbag?"],<br>
-["this","/&#240;&#618;s/","pron. &#36825;","Is this your handbag?"],<br>
-["your","/j&#596;&#720;(r)/","adj. &#20320;&#30340;&#65307;&#20320;&#20204;&#30340;","Is this your handbag?"],<br>
-["handbag","/&#712;h&#230;ndb&#230;&#609;/","n. &#65288;&#22899;&#29992;&#65289;&#25163;&#25552;&#21253;","Is this your handbag?"],<br>
-["pardon","/&#712;p&#593;&#720;dn/","int. &#35831;&#20877;&#35828;&#19968;&#36941;","Pardon? Is this your handbag?"],<br>
-["it","/&#618;t/","pron. &#23427;","Is this your handbag? Pardon? Yes, it is."],<br>
-["thank","/&#952;&#230;&#331;k/","v. &#24863;&#35874;","Thank you very much."],<br>
-["you","/ju&#720;/","pron. &#20320;&#65307;&#20320;&#20204;","Thank you very much."],<br>
-["very","/&#712;veri/","adv. &#38750;&#24120;","Thank you very much."],<br>
-["much","/m&#652;t&#643;/","adv. &#38750;&#24120;&#65288;&#29992;&#20110;&#21152;&#24378;&#35821;&#27668;&#65289;","Thank you very much."],<br>
-["pen","/pen/","n. &#38050;&#31508;","What colour is your pen?"],<br>
-["pencil","/&#712;pensl/","n. &#38085;&#31508;","What colour is your pencil?"],<br>
-["book","/b&#650;k/","n. &#20070;","What colour is your book?"],<br>
-["watch","/w&#594;t&#643;/","n. &#25163;&#34920;","What colour is your watch?"],<br>
-["coat","/k&#601;&#650;t/","n. &#19978;&#34915;&#65307;&#22806;&#22871;","What colour is your coat?"],<br>
-["dress","/dres/","n. &#36830;&#34915;&#35033;","What colour is your dress?"],<br>
-["skirt","/sk&#604;&#720;t/","n. &#35033;&#23376;","What colour is your skirt?"],<br>
-["shirt","/&#643;&#604;&#720;t/","n. &#34924;&#34923;","What colour is your shirt?"],<br>
-["car","/k&#593;&#720;(r)/","n. &#23567;&#27773;&#36710;","What colour is your car?"],<br>
-["house","/ha&#650;s/","n. &#25151;&#23376;","What colour is your house?"],<br>
-["umbrella","/&#652;m&#712;brel&#601;/","n. &#38632;&#20254;","Please give me my umbrella."],<br>
-["please","/pli&#720;z/","int. &#35831;","Please give me my umbrella."],<br>
-["here","/h&#618;&#601;(r)/","adv. &#36825;&#37324;","Here is my ticket."],<br>
-["my","/ma&#618;/","pron. &#25105;&#30340;","Here is my ticket."],<br>
-["ticket","/&#712;t&#618;k&#618;t/","n. &#31080;","Here is my ticket."],<br>
-["number","/&#712;n&#652;mb&#601;(r)/","n. &#21495;&#30721;","What&#8217;s your number?"],<br>
-["five","/fa&#618;v/","num. &#20116;","Number five."],<br>
-["sorry","/&#712;s&#594;ri/","adj. &#23545;&#19981;&#36215;&#30340;","Sorry, sir."],<br>
-["sir","/s&#604;&#720;(r)/","n. &#20808;&#29983;","Sorry, sir."],<br>
-["suit","/su&#720;t/","n. &#19968;&#22871;&#34915;&#26381;","This is my suit."],<br>
-["school","/sku&#720;l/","n. &#23398;&#26657;","This is my school."],<br>
-["teacher","/&#712;ti&#720;t&#643;&#601;(r)/","n. &#32769;&#24072;","This is my teacher."],<br>
-["son","/s&#652;n/","n. &#20799;&#23376;","This is my son."],<br>
-["daughter","/&#712;d&#596;&#720;t&#601;(r)/","n. &#22899;&#20799;","This is my daughter."]<br>
-];<br>
-<br>
-const size = 18;<br>
-for(let i=0; i&lt;words.length; i+=size){<br>
-&nbsp; const chunk = words.slice(i,i+size);<br>
-&nbsp; while(chunk.length&lt;size) chunk.push(["","",""]);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // &#34917;&#31354;&#21345;<br>
-<br>
-&nbsp; /* &#27491;&#38754;&#39029; */<br>
-&nbsp; document.write('&lt;div class="page"&gt;');<br>
-&nbsp; chunk.forEach((w,j)=&gt;{<br>
-&nbsp;&nbsp;&nbsp; document.write(`&lt;div class="card front pos${j.toString().padStart(2,'0')}"&gt;&lt;div class="word"&gt;${w[0]}&lt;/div&gt;&lt;div class="phonetic"&gt;${w[1]}&lt;/div&gt;&lt;div class="eg"&gt;${w[3]}&lt;/div&gt;&lt;/div&gt;`);<br>
-&nbsp; });<br>
-&nbsp; document.write('&lt;/div&gt;');<br>
-<br>
-&nbsp; /* &#32972;&#38754;&#39029;&#65288;&#26059;&#36716;180&#176;&#65292;&#32763;&#32440;&#21518;&#25991;&#23383;&#26041;&#21521;&#27491;&#30830;&#65289;*/<br>
-&nbsp; document.write('&lt;div class="page" style="transform:rotate(180deg);"&gt;');<br>
-&nbsp; chunk.forEach((w,j)=&gt;{<br>
-&nbsp;&nbsp;&nbsp; document.write(`&lt;div class="card back pos${j.toString().padStart(2,'0')}"&gt;&lt;div class="trans"&gt;${w[2]}&lt;/div&gt;&lt;/div&gt;`);<br>
-&nbsp; });<br>
-&nbsp; document.write('&lt;/div&gt;');<br>
-}<br>
-<br>
-window.print();<br>
-&lt;/script&gt;<br>
-&lt;/body&gt;<br>
-&lt;/html&gt;<br>
-</div>
+body{ font-family:Arial,Helvetica,"Microsoft YaHei",sans-serif; }
+.page{ width:210mm; height:297mm; position:relative; page-break-after:always; }
+
+.card{ width:62mm; height:45mm; position:absolute; display:flex; flex-direction:column; justify-content:center; align-items:center; background:#fff; }
+
+/* 6×3 网格 */
+.pos00{ top:5mm; left:5mm; }  .pos01{ top:5mm; left:72mm; }  .pos02{ top:5mm; left:139mm; }
+.pos03{ top:54mm; left:5mm; } .pos04{ top:54mm; left:72mm; } .pos05{ top:54mm; left:139mm; }
+.pos06{ top:103mm; left:5mm; } .pos07{ top:103mm; left:72mm; } .pos08{ top:103mm; left:139mm; }
+.pos09{ top:152mm; left:5mm; } .pos10{ top:152mm; left:72mm; } .pos11{ top:152mm; left:139mm; }
+.pos12{ top:201mm; left:5mm; } .pos13{ top:201mm; left:72mm; } .pos14{ top:201mm; left:139mm; }
+.pos15{ top:250mm; left:5mm; } .pos16{ top:250mm; left:72mm; } .pos17{ top:250mm; left:139mm; }
+
+.front .word{ font-size:32px; font-weight:bold; color:#036; }
+.front .phonetic{ font-size:16px; color:#555; margin-top:3px; }
+.front .eg{ font-size:12px; color:#333; margin-top:5px; text-align:center; line-height:1.3; max-width:56mm; }
+.back .trans{ font-size:28px; color:#c00; text-align:center; }
+</style>
+</head>
+<body>
+
+<script>
+const words = [
+["excuse","/ɪkˈskjuːz/","v. 原谅","Excuse me! Yes? Is this your handbag?"],
+["me","/miː/","pron. 我（宾格）","Excuse me! Yes? Is this your handbag?"],
+["yes","/jes/","int. 是的","Excuse me! Yes? Is this your handbag?"],
+["is","/ɪz/","v. be动词现在时第三人称单数","Is this your handbag?"],
+["this","/ðɪs/","pron. 这","Is this your handbag?"],
+["your","/jɔː(r)/","adj. 你的；你们的","Is this your handbag?"],
+["handbag","/ˈhændbæɡ/","n. （女用）手提包","Is this your handbag?"],
+["pardon","/ˈpɑːdn/","int. 请再说一遍","Pardon? Is this your handbag?"],
+["it","/ɪt/","pron. 它","Is this your handbag? Pardon? Yes, it is."],
+["thank","/θæŋk/","v. 感谢","Thank you very much."],
+["you","/juː/","pron. 你；你们","Thank you very much."],
+["very","/ˈveri/","adv. 非常","Thank you very much."],
+["much","/mʌtʃ/","adv. 非常（用于加强语气）","Thank you very much."],
+["pen","/pen/","n. 钢笔","What colour is your pen?"],
+["pencil","/ˈpensl/","n. 铅笔","What colour is your pencil?"],
+["book","/bʊk/","n. 书","What colour is your book?"],
+["watch","/wɒtʃ/","n. 手表","What colour is your watch?"],
+["coat","/kəʊt/","n. 上衣；外套","What colour is your coat?"],
+["dress","/dres/","n. 连衣裙","What colour is your dress?"],
+["skirt","/skɜːt/","n. 裙子","What colour is your skirt?"],
+["shirt","/ʃɜːt/","n. 衬衫","What colour is your shirt?"],
+["car","/kɑː(r)/","n. 小汽车","What colour is your car?"],
+["house","/haʊs/","n. 房子","What colour is your house?"],
+["umbrella","/ʌmˈbrelə/","n. 雨伞","Please give me my umbrella."],
+["please","/pliːz/","int. 请","Please give me my umbrella."],
+["here","/hɪə(r)/","adv. 这里","Here is my ticket."],
+["my","/maɪ/","pron. 我的","Here is my ticket."],
+["ticket","/ˈtɪkɪt/","n. 票","Here is my ticket."],
+["number","/ˈnʌmbə(r)/","n. 号码","What’s your number?"],
+["five","/faɪv/","num. 五","Number five."],
+["sorry","/ˈsɒri/","adj. 对不起的","Sorry, sir."],
+["sir","/sɜː(r)/","n. 先生","Sorry, sir."],
+["suit","/suːt/","n. 一套衣服","This is my suit."],
+["school","/skuːl/","n. 学校","This is my school."],
+["teacher","/ˈtiːtʃə(r)/","n. 老师","This is my teacher."],
+["son","/sʌn/","n. 儿子","This is my son."],
+["daughter","/ˈdɔːtə(r)/","n. 女儿","This is my daughter."]
+];
+
+const size = 18;
+for(let i=0; i<words.length; i+=size){
+  const chunk = words.slice(i,i+size);
+  while(chunk.length<size) chunk.push(["","",""]);          // 补空卡
+
+  /* 正面页 */
+  document.write('<div class="page">');
+  chunk.forEach((w,j)=>{
+    document.write(`<div class="card front pos${j.toString().padStart(2,'0')}"><div class="word">${w[0]}</div><div class="phonetic">${w[1]}</div><div class="eg">${w[3]}</div></div>`);
+  });
+  document.write('</div>');
+
+  /* 背面页（旋转180°，翻纸后文字方向正确）*/
+  document.write('<div class="page" style="transform:rotate(180deg);">');
+  chunk.forEach((w,j)=>{
+    document.write(`<div class="card back pos${j.toString().padStart(2,'0')}"><div class="trans">${w[2]}</div></div>`);
+  });
+  document.write('</div>');
+}
+
+window.print();
+</script>
 </body>
 </html>
