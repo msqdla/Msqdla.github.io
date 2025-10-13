@@ -1,416 +1,153 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>统香 - TONG LIAOFA</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Microsoft YaHei', Arial, sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            color: #333;
-            overflow-x: hidden;
-        }
-
-        .page {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 40px;
-            position: relative;
-            animation: fadeIn 1s ease-in-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .page:nth-child(odd) {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-        }
-
-        .page:nth-child(even) {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            color: white;
-        }
-
-        h1 {
-            font-size: 3.5rem;
-            margin-bottom: 30px;
-            text-align: center;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-            animation: slideIn 1.2s ease-out;
-        }
-
-        @keyframes slideIn {
-            from { transform: translateX(-50px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        h2 {
-            font-size: 2.5rem;
-            margin-bottom: 25px;
-            text-align: center;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
-        }
-
-        .subtitle {
-            font-size: 1.8rem;
-            margin-bottom: 20px;
-            font-style: italic;
-            opacity: 0.9;
-        }
-
-        .content {
-            max-width: 800px;
-            text-align: center;
-            font-size: 1.2rem;
-            line-height: 1.8;
-            margin-bottom: 30px;
-        }
-
-        .points {
-            text-align: left;
-            font-size: 1.1rem;
-            line-height: 1.8;
-            max-width: 700px;
-            margin: 0 auto;
-        }
-
-        .points li {
-            margin-bottom: 15px;
-            padding-left: 20px;
-            position: relative;
-        }
-
-        .points li::before {
-            content: "▸";
-            position: absolute;
-            left: 0;
-            color: #ffd700;
-            font-size: 1.2rem;
-        }
-
-        .image-container {
-            margin: 30px 0;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            transition: transform 0.3s ease;
-        }
-
-        .image-container:hover {
-            transform: scale(1.05);
-        }
-
-        .image-container img {
-            max-width: 100%;
-            height: auto;
-            display: block;
-        }
-
-        .navigation {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            display: flex;
-            gap: 15px;
-            z-index: 1000;
-        }
-
-        .nav-btn {
-            background: rgba(255,255,255,0.2);
-            border: 2px solid white;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 30px;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-        }
-
-        .nav-btn:hover {
-            background: rgba(255,255,255,0.3);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-
-        .page-indicator {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0,0,0,0.5);
-            color: white;
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            z-index: 1000;
-        }
-
-        .fade-in {
-            animation: fadeInUp 1s ease-out;
-        }
-
-        @keyframes fadeInUp {
-            from { 
-                opacity: 0; 
-                transform: translateY(30px); 
-            }
-            to { 
-                opacity: 1; 
-                transform: translateY(0); 
-            }
-        }
-
-        @media (max-width: 768px) {
-            h1 { font-size: 2.5rem; }
-            h2 { font-size: 2rem; }
-            .subtitle { font-size: 1.5rem; }
-            .content { font-size: 1.1rem; }
-            .points { font-size: 1rem; }
-            .page { padding: 20px; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>原木质感·手作粗杆草药香</title>
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+html,body{
+    width:100%;
+    height:100%;
+    font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue","PingFang SC","Microsoft YaHei",sans-serif;
+    background:#f5f3f0;
+    color:#3e3a37;
+    overflow:hidden;
+}
+.slide{
+    width:100%;
+    height:100%;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    padding:0 8vw;
+    text-align:center;
+    position:absolute;
+    top:0;
+    left:0;
+    transition:transform .5s ease;
+}
+h1{
+    font-size:8vw;
+    font-weight:300;
+    letter-spacing:.1em;
+    margin-bottom:3vh;
+}
+h2{
+    font-size:6vw;
+    font-weight:400;
+    margin-bottom:3vh;
+}
+p,li{
+    font-size:4.5vw;
+    line-height:1.9;
+    margin:1.2vh 0;
+    font-weight:300;
+}
+ul{
+    list-style:none;
+}
+li:before{
+    content:"— ";
+    margin-right:1vw;
+}
+.signature{
+    position:absolute;
+    bottom:4vh;
+    right:8vw;
+    font-size:3vw;
+    color:#9e9993;
+    letter-spacing:.1em;
+}
+.nav{
+    position:absolute;
+    bottom:4vh;
+    left:50%;
+    transform:translateX(-50%);
+    display:flex;
+    gap:3vw;
+}
+.nav button{
+    background:none;
+    border:1px solid #3e3a37;
+    color:#3e3a37;
+    padding:1.5vw 4vw;
+    font-size:3.5vw;
+    border-radius:20vw;
+    cursor:pointer;
+}
+</style>
 </head>
 <body>
-    <!-- 第一页：标题页 -->
-    <div class="page" id="page1">
-        <h1>统香</h1>
-        <p class="subtitle">TONG LIAOFA</p>
-        <div class="content">
-            <p>探索传统香料的奥秘</p>
-            <p>传承千年文化精髓</p>
-        </div>
-        <div class="image-container">
-            <img src="https://via.placeholder.com/600x400/FF6B6B/FFFFFF?text=统香文化" alt="统香文化">
-        </div>
-    </div>
 
-    <!-- 第二页：介绍 -->
-    <div class="page" id="page2">
-        <h2>什么是统香？</h2>
-        <div class="content">
-            <p>统香，作为中国传统香文化的重要组成部分，承载着深厚的历史文化内涵。它不仅是香料的简单组合，更是中华文化精神的体现。</p>
-        </div>
-        <div class="points">
-            <ul>
-                <li>源远流长的历史传承</li>
-                <li>独特的香料配方工艺</li>
-                <li>丰富的文化象征意义</li>
-                <li>现代生活中的应用价值</li>
-            </ul>
-        </div>
-    </div>
+<div class="slide" id="s0">
+<h1>原木质感<br>手作粗杆草药香</h1>
+<p>在颗粒肌理中，捕捉草木的自然疗愈力</p>
+<div class="signature">于翔</div>
+</div>
 
-    <!-- 第三页：历史发展 -->
-    <div class="page" id="page3">
-        <h2>历史发展脉络</h2>
-        <div class="content">
-            <p>从古代宫廷到民间生活，统香的发展历程见证了中华文明的演变。</p>
-        </div>
-        <div class="points">
-            <ul>
-                <li>先秦时期：香文化的萌芽</li>
-                <li>汉唐时期：香料贸易的繁荣</li>
-                <li>宋元时期：制香工艺的高峰</li>
-                <li>明清时期：香文化的普及</li>
-                <li>现代：传统与创新的融合</li>
-            </ul>
-        </div>
-        <div class="image-container">
-            <img src="https://via.placeholder.com/600x400/4ECDC4/FFFFFF?text=历史演变" alt="历史演变">
-        </div>
-    </div>
+<div class="slide" id="s1">
+<h2>沙龙目标</h2>
+<ul>
+<li>认识“天然颗粒感、纯植物基底”特质</li>
+<li>掌握完整流程，独立完成1-2支成品</li>
+<li>感受“可见原料、可触肌理”的质朴美学</li>
+</ul>
+<div class="signature">于翔</div>
+</div>
 
-    <!-- 第四页：制作工艺 -->
-    <div class="page" id="page4">
-        <h2>传统制作工艺</h2>
-        <div class="content">
-            <p>统香的制作工艺凝聚了古人的智慧，每一道工序都精益求精。</p>
-        </div>
-        <div class="points">
-            <ul>
-                <li>选材：精选天然香料</li>
-                <li>配比：独特的配方比例</li>
-                <li>研磨：细致的研磨工艺</li>
-                <li>和香：均匀的混合技术</li>
-                <li>成型：传统的手工制作</li>
-                <li>晾晒：自然的干燥过程</li>
-            </ul>
-        </div>
-    </div>
+<div class="slide" id="s2">
+<h2>参与人群</h2>
+<p>自然香氛爱好者<br>手工DIY深度玩家<br>追求原生态生活美学的人群</p>
+<div class="signature">于翔</div>
+</div>
 
-    <!-- 第五页：文化意义 -->
-    <div class="page" id="page5">
-        <h2>文化意义与价值</h2>
-        <div class="content">
-            <p>统香不仅是一种物质产品，更是中华文化的重要载体。</p>
-        </div>
-        <div class="points">
-            <ul>
-                <li>宗教仪式中的重要角色</li>
-                <li>文人雅士的精神寄托</li>
-                <li>中医养生的辅助手段</li>
-                <li>礼仪交往的珍贵礼品</li>
-                <li>艺术创作的灵感来源</li>
-            </ul>
-        </div>
-        <div class="image-container">
-            <img src="https://via.placeholder.com/600x400/45B7D1/FFFFFF?text=文化价值" alt="文化价值">
-        </div>
-    </div>
+<div class="slide" id="s3">
+<h2>原料配方</h2>
+<ul>
+<li>秘鲁圣木碎 6g｜奶香木质调</li>
+<li>有机迷迭香碎 3g｜清新松针感</li>
+<li>天然楠木粘粉 1g｜纯植物粘合</li>
+</ul>
+<div class="signature">于翔</div>
+</div>
 
-    <!-- 第六页：现代应用 -->
-    <div class="page" id="page6">
-        <h2>现代生活中的应用</h2>
-        <div class="content">
-            <p>在快节奏的现代生活中，统香为我们提供了一种回归自然、放松身心的方式。</p>
-        </div>
-        <div class="points">
-            <ul>
-                <li>冥想静心的辅助工具</li>
-                <li>家居环境的自然香氛</li>
-                <li>SPA养生的心理疗愈</li>
-                <li>文化创意产品的开发</li>
-                <li>国际文化交流的使者</li>
-            </ul>
-        </div>
-    </div>
+<div class="slide" id="s4">
+<h2>制作口诀</h2>
+<p>干料混匀 → 少量多次喷水 → 捏成“不散团”<br>
+双手C型搓条 → 直径8mm → 轻放晾架<br>
+阴干48h，不可暴晒</p>
+<div class="signature">于翔</div>
+</div>
 
-    <!-- 第七页：结语 -->
-    <div class="page" id="page7">
-        <h2>传承与创新</h2>
-        <div class="content">
-            <p>统香文化需要我们共同传承和发扬，让这份珍贵的文化遗产在新时代焕发出新的光彩。</p>
-        </div>
-        <div class="points">
-            <ul>
-                <li>保护传统工艺技术</li>
-                <li>培养新一代传承人</li>
-                <li>创新产品开发模式</li>
-                <li>拓展国际市场空间</li>
-                <li>促进文化交流互鉴</li>
-            </ul>
-        </div>
-        <div class="image-container">
-            <img src="https://via.placeholder.com/600x400/96CEB4/FFFFFF?text=传承未来" alt="传承未来">
-        </div>
-    </div>
+<div class="slide" id="s5">
+<h2>使用指南</h2>
+<p>点燃顶端，吹灭明火，置防火香盘<br>
+颗粒逐层释香，适合冥想、小憩<br>
+让“不完美”肌理成为自然艺术装置</p>
+<div class="signature">于翔</div>
+</div>
 
-    <!-- 导航按钮 -->
-    <div class="navigation">
-        <button class="nav-btn" onclick="previousPage()">上一页</button>
-        <button class="nav-btn" onclick="nextPage()">下一页</button>
-    </div>
+<div class="nav">
+<button onclick="go(-1)">上一页</button>
+<button onclick="go(1)">下一页</button>
+</div>
 
-    <!-- 页面指示器 -->
-    <div class="page-indicator">
-        <span id="currentPage">1</span> / <span id="totalPages">7</span>
-    </div>
-
-    <script>
-        let currentPage = 1;
-        const totalPages = 7;
-
-        function showPage(pageNum) {
-            // 隐藏所有页面
-            for (let i = 1; i <= totalPages; i++) {
-                document.getElementById(`page${i}`).style.display = 'none';
-            }
-            
-            // 显示当前页面
-            document.getElementById(`page${pageNum}`).style.display = 'flex';
-            
-            // 更新页面指示器
-            document.getElementById('currentPage').textContent = pageNum;
-            
-            // 添加淡入动画
-            document.getElementById(`page${pageNum}`).classList.add('fade-in');
-            setTimeout(() => {
-                document.getElementById(`page${pageNum}`).classList.remove('fade-in');
-            }, 1000);
-        }
-
-        function nextPage() {
-            if (currentPage < totalPages) {
-                currentPage++;
-                showPage(currentPage);
-            }
-        }
-
-        function previousPage() {
-            if (currentPage > 1) {
-                currentPage--;
-                showPage(currentPage);
-            }
-        }
-
-        // 键盘导航
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'ArrowRight' || event.key === ' ') {
-                nextPage();
-            } else if (event.key === 'ArrowLeft') {
-                previousPage();
-            }
-        });
-
-        // 初始化显示第一页
-        showPage(1);
-
-        // 自动播放功能（可选）
-        let autoPlay = false;
-        let autoPlayInterval;
-
-        function toggleAutoPlay() {
-            if (autoPlay) {
-                clearInterval(autoPlayInterval);
-                autoPlay = false;
-            } else {
-                autoPlayInterval = setInterval(() => {
-                    if (currentPage < totalPages) {
-                        nextPage();
-                    } else {
-                        currentPage = 1;
-                        showPage(currentPage);
-                    }
-                }, 5000);
-                autoPlay = true;
-            }
-        }
-
-        // 添加触摸滑动支持（移动设备）
-        let touchStartX = 0;
-        let touchEndX = 0;
-
-        document.addEventListener('touchstart', function(event) {
-            touchStartX = event.changedTouches[0].screenX;
-        });
-
-        document.addEventListener('touchend', function(event) {
-            touchEndX = event.changedTouches[0].screenX;
-            handleSwipe();
-        });
-
-        function handleSwipe() {
-            if (touchEndX < touchStartX - 50) {
-                nextPage();
-            }
-            if (touchEndX > touchStartX + 50) {
-                previousPage();
-            }
-        }
-    </script>
+<script>
+let idx=0;
+const slides=document.querySelectorAll('.slide');
+function go(dir){
+idx=Math.max(0,Math.min(slides.length-1,idx+dir));
+document.querySelectorAll('.slide').forEach((s,i)=>{
+s.style.transform=`translateX(${(i-idx)*100}%)`;
+});
+}
+go(0);
+</script>
 </body>
 </html>
