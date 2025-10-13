@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>NCE1 L1-3 全部18卡双面（循环页）</title>
+<title>NCE1 L1-3 双面18卡（物理镜像）</title>
 <style>
 @page{ size:A4; margin:0; }
 @media print{
@@ -13,7 +13,7 @@ body{ font-family:Arial,Helvetica,"Microsoft YaHei",sans-serif; }
 
 .card{ width:62mm; height:45mm; position:absolute; display:flex; flex-direction:column; justify-content:center; align-items:center; background:#fff; }
 
-/* 6×3 网格 */
+/* 3×6 物理网格 */
 .pos00{ top:5mm; left:5mm; }  .pos01{ top:5mm; left:72mm; }  .pos02{ top:5mm; left:139mm; }
 .pos03{ top:54mm; left:5mm; } .pos04{ top:54mm; left:72mm; } .pos05{ top:54mm; left:139mm; }
 .pos06{ top:103mm; left:5mm; } .pos07{ top:103mm; left:72mm; } .pos08{ top:103mm; left:139mm; }
@@ -24,6 +24,8 @@ body{ font-family:Arial,Helvetica,"Microsoft YaHei",sans-serif; }
 .front .word{ font-size:32px; font-weight:bold; color:#036; }
 .front .phonetic{ font-size:16px; color:#555; margin-top:3px; }
 .front .eg{ font-size:12px; color:#333; margin-top:5px; text-align:center; line-height:1.3; max-width:56mm; }
+.front .movie{ font-size:11px; color:#0066cc; margin-top:4px; text-align:center; max-width:56mm; }
+.front .time{ font-size:10px; color:#888; margin-top:2px; text-align:center; }
 .back .trans{ font-size:28px; color:#c00; text-align:center; }
 </style>
 </head>
@@ -31,60 +33,60 @@ body{ font-family:Arial,Helvetica,"Microsoft YaHei",sans-serif; }
 
 <script>
 const words = [
-["excuse","/ɪkˈskjuːz/","v. 原谅","Excuse me! Yes? Is this your handbag?"],
-["me","/miː/","pron. 我（宾格）","Excuse me! Yes? Is this your handbag?"],
-["yes","/jes/","int. 是的","Excuse me! Yes? Is this your handbag?"],
-["is","/ɪz/","v. be动词现在时第三人称单数","Is this your handbag?"],
-["this","/ðɪs/","pron. 这","Is this your handbag?"],
-["your","/jɔː(r)/","adj. 你的；你们的","Is this your handbag?"],
-["handbag","/ˈhændbæɡ/","n. （女用）手提包","Is this your handbag?"],
-["pardon","/ˈpɑːdn/","int. 请再说一遍","Pardon? Is this your handbag?"],
-["it","/ɪt/","pron. 它","Is this your handbag? Pardon? Yes, it is."],
-["thank","/θæŋk/","v. 感谢","Thank you very much."],
-["you","/juː/","pron. 你；你们","Thank you very much."],
-["very","/ˈveri/","adv. 非常","Thank you very much."],
-["much","/mʌtʃ/","adv. 非常（用于加强语气）","Thank you very much."],
-["pen","/pen/","n. 钢笔","What colour is your pen?"],
-["pencil","/ˈpensl/","n. 铅笔","What colour is your pencil?"],
-["book","/bʊk/","n. 书","What colour is your book?"],
-["watch","/wɒtʃ/","n. 手表","What colour is your watch?"],
-["coat","/kəʊt/","n. 上衣；外套","What colour is your coat?"],
-["dress","/dres/","n. 连衣裙","What colour is your dress?"],
-["skirt","/skɜːt/","n. 裙子","What colour is your skirt?"],
-["shirt","/ʃɜːt/","n. 衬衫","What colour is your shirt?"],
-["car","/kɑː(r)/","n. 小汽车","What colour is your car?"],
-["house","/haʊs/","n. 房子","What colour is your house?"],
-["umbrella","/ʌmˈbrelə/","n. 雨伞","Please give me my umbrella."],
-["please","/pliːz/","int. 请","Please give me my umbrella."],
-["here","/hɪə(r)/","adv. 这里","Here is my ticket."],
-["my","/maɪ/","pron. 我的","Here is my ticket."],
-["ticket","/ˈtɪkɪt/","n. 票","Here is my ticket."],
-["number","/ˈnʌmbə(r)/","n. 号码","What’s your number?"],
-["five","/faɪv/","num. 五","Number five."],
-["sorry","/ˈsɒri/","adj. 对不起的","Sorry, sir."],
-["sir","/sɜː(r)/","n. 先生","Sorry, sir."],
-["suit","/suːt/","n. 一套衣服","This is my suit."],
-["school","/skuːl/","n. 学校","This is my school."],
-["teacher","/ˈtiːtʃə(r)/","n. 老师","This is my teacher."],
-["son","/sʌn/","n. 儿子","This is my son."],
-["daughter","/ˈdɔːtə(r)/","n. 女儿","This is my daughter."]
+["excuse","/ɪkˈskjuːz/","v. 原谅","Excuse me! Yes? Is this your handbag?","Excuse me, sir. I'm looking for the ZPD. - It's right over there.","00:03:15"],
+["me","/miː/","pron. 我（宾格）","Excuse me! Yes? Is this your handbag?","You got a problem with that, buddy? - No, sir. Just trying to help.","00:05:30"],
+["yes","/jes/","int. 是的","Excuse me! Yes? Is this your handbag?","Yes! I'm a real cop. - No, you're not.","00:12:45"],
+["is","/ɪz/","v. be动词现在时第三人称单数","Is this your handbag?","Is that a carrot? - No, it's a pen.","00:08:20"],
+["this","/ðɪs/","pron. 这","Is this your handbag?","This is Officer Hopps. She's the new recruit.","00:15:10"],
+["your","/jɔː(r)/","adj. 你的；你们的","Is this your handbag?","Your license plate is showing.","00:07:55"],
+["handbag","/ˈhændbæɡ/","n. （女用）手提包","Is this your handbag?","She's got a handbag! - No, it's a tranquilizer gun.","00:22:30"],
+["pardon","/ˈpɑːdn/","int. 请再说一遍","Pardon? Is this your handbag?","Pardon me, but I couldn't help overhearing.","00:09:40"],
+["it","/ɪt/","pron. 它","Is this your handbag? Pardon? Yes, it is.","It's a hustle, sweetheart.","00:18:00"],
+["thank","/θæŋk/","v. 感谢","Thank you very much.","Thank you for saving me. - No problem.","00:25:15"],
+["you","/juː/","pron. 你；你们","Thank you very much.","You think I'm going to let you steal my pen?","00:11:50"],
+["very","/ˈveri/","adv. 非常","Thank you very much.","Very impressive, Officer Hopps.","00:16:45"],
+["much","/mʌtʃ/","adv. 非常（用于加强语气）","Thank you very much.","Much obliged, ma'am.","00:13:30"],
+["pen","/pen/","n. 钢笔","What colour is your pen?","Is that a carrot? - No, it's a pen.","00:08:20"],
+["pencil","/ˈpensl/","n. 铅笔","What colour is your pencil?","I need a pencil to write this down.","00:10:10"],
+["book","/bʊk/","n. 书","What colour is your book?","I have a book about Zootopia.","00:14:20"],
+["watch","/wɒtʃ/","n. 手表","What colour is your watch?","Check your watch. We're running late.","00:06:45"],
+["coat","/kəʊt/","n. 上衣；外套","What colour is your coat?","That's a nice coat. Where did you get it?","00:19:30"],
+["dress","/dres/","n. 连衣裙","What colour is your dress?","She's wearing a beautiful dress.","00:21:10"],
+["skirt","/skɜːt/","n. 裙子","What colour is your skirt?","That's a stylish skirt.","00:17:40"],
+["shirt","/ʃɜːt/","n. 衬衫","What colour is your shirt?","Your shirt is untucked.","00:12:20"],
+["car","/kɑː(r)/","n. 小汽车","What colour is your car?","Is that your car? - No, it's a taxi.","00:04:50"],
+["house","/haʊs/","n. 房子","What colour is your house?","I live in a small house in the countryside.","00:23:45"],
+["umbrella","/ʌmˈbrelə/","n. 雨伞","Please give me my umbrella.","I need an umbrella. It's raining.","00:02:30"],
+["please","/pliːz/","int. 请","Please give me my umbrella.","Please, I need your help.","00:01:45"],
+["here","/hɪə(r)/","adv. 这里","Here is my ticket.","Here is my badge. I'm a real cop.","00:12:45"],
+["my","/maɪ/","pron. 我的","Here is my ticket.","My name is Officer Hopps.","00:15:00"],
+["ticket","/ˈtɪkɪt/","n. 票","Here is my ticket.","I got a ticket for speeding.","00:20:20"],
+["number","/ˈnʌmbə(r)/","n. 号码","What’s your number?","What's your badge number?","00:14:50"],
+["five","/faɪv/","num. 五","Number five.","I'm number five in the class.","00:18:30"],
+["sorry","/ˈsɒri/","adj. 对不起的","Sorry, sir.","Sorry, I didn't mean to interrupt.","00:08:50"],
+["sir","/sɜː(r)/","n. 先生","Sorry, sir.","Sir, I need to see your ID.","00:10:30"],
+["suit","/suːt/","n. 一套衣服","This is my suit.","That's a nice suit. Are you a lawyer?","00:22:10"],
+["school","/skuːl/","n. 学校","This is my school.","I went to school in the city.","00:16:20"],
+["teacher","/ˈtiːtʃə(r)/","n. 老师","This is my teacher.","My teacher said I could be anything I want.","00:11:10"],
+["son","/sʌn/","n. 儿子","This is my son.","That's my son. He's a police officer.","00:24:40"],
+["daughter","/ˈdɔːtə(r)/","n. 女儿","This is my daughter.","My daughter wants to be a dancer.","00:26:10"]
 ];
 
 const size = 18;
 for(let i=0; i<words.length; i+=size){
   const chunk = words.slice(i,i+size);
-  while(chunk.length<size) chunk.push(["","",""]);          // 补空卡
+  while(chunk.length<size) chunk.push(["","",""]);
 
-  /* 正面页 */
+  /* 正面页（顺序 0-17）*/
   document.write('<div class="page">');
   chunk.forEach((w,j)=>{
-    document.write(`<div class="card front pos${j.toString().padStart(2,'0')}"><div class="word">${w[0]}</div><div class="phonetic">${w[1]}</div><div class="eg">${w[3]}</div></div>`);
+    document.write(`<div class="card front pos${j.toString().padStart(2,'0')}"><div class="word">${w[0]}</div><div class="phonetic">${w[1]}</div><div class="eg">${w[3]}</div><div class="movie">${w[4]}</div><div class="time">${w[5]}</div></div>`);
   });
   document.write('</div>');
 
-  /* 背面页（旋转180°，翻纸后文字方向正确）*/
+  /* 背面页：整页旋转180° + 倒序排放 → 翻纸后 0-0 对齐且文字方向正确 */
   document.write('<div class="page" style="transform:rotate(180deg);">');
-  chunk.forEach((w,j)=>{
+  chunk.slice().reverse().forEach((w,j)=>{
     document.write(`<div class="card back pos${j.toString().padStart(2,'0')}"><div class="trans">${w[2]}</div></div>`);
   });
   document.write('</div>');
