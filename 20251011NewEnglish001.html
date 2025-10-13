@@ -24,9 +24,9 @@ body{ font-family:Arial,Helvetica,"Microsoft YaHei",sans-serif; }
 .front .word{ font-size:32px; font-weight:bold; color:#036; }
 .front .phonetic{ font-size:16px; color:#555; margin-top:3px; }
 .front .eg{ font-size:15px; color:#333; margin-top:5px; text-align:left; line-height:1.3; max-width:56mm; }
-.front .movie{ font-size:16px; color:#0066cc; margin-top:4px; text-align:left; max-width:56mm; }
+.front .movie{ font-size:16px; color:#0066cc; margin-top:8px; text-align:left; max-width:56mm; }
 .front .time{ font-size:10px; color:#888; margin-top:2px; text-align:right; }
-.back .trans{ font-size:28px; font-weight:bold;color:#c00; text-align:left; }
+.back .trans{ font-size:28px; font-weight:bold; color:#c00; text-align:left; }
 </style>
 </head>
 <body>
@@ -73,27 +73,49 @@ const words = [
 ];
 
 const size = 18;
+
 for(let i=0; i<words.length; i+=size){
   const chunk = words.slice(i,i+size);
   while(chunk.length<size) chunk.push(["","",""]);
-
+  
   /* 正面页（顺序 0-17）*/
   document.write('<div class="page">');
   chunk.forEach((w,j)=>{
-    document.write(`<div class="card front pos${j.toString().padStart(2,'0')}"><div class="word">${w[0]}</div><div class="phonetic">${w[1]}</div><div class="eg">${w[3]}</div><div class="movie">${w[4]}</div><div class="time">${w[5]}</div></div>`);
+    document.write(
+      `<div class="card front pos${j.toString().padStart(2,'0')}">
+         <div class="word">${w[0]}</div>
+         <div class="phonetic">${w[1]}</div>
+         <div class="eg">${w[3]}</div>
+         <div class="movie">${w[4]}</div>
+         <div class="time">${w[5]}</div>
+       </div>`
+    );
   });
   document.write('</div>');
 
-  /* 背面页：整页旋转180° + 倒序排放 → 翻纸后 0-0 对齐且文字方向正确 */
+  /* 背面页：整页 rotate(180deg) + 行内水平镜像（同一行 0<->2）→ 一一对齐 */
   document.write('<div class="page" style="transform:rotate(180deg);">');
-// 交换第0列和第2列（“原谅”和“是的”）
-if (chunk.length >= 3) [chunk[0], chunk[2]] = [chunk[2], chunk[0]];
-// 正序排放（已交换）
-chunk.forEach((w, j) => {
-  document.write(`<div class="card back pos${j.toString().padStart(2,'0')}"><div class="trans">${w[2]}</div></div>`);
-});
-document.write('</div>');
+
+  function horizMirrorIndex(j){
+    const r = Math.floor(j/3);     // 行
+    const c = j % 3;               // 列 0,1,2
+    const mc = 2 - c;              // 水平镜像列
+    return r*3 + mc;               // 同一行的镜像位置
+  }
+
+  for(let j=0;j<size;j++){
+    const w = chunk[j];                         // 与正面同一条记录
+    const idx = horizMirrorIndex(j)             // 背面放置到镜像列
+                  .toString().padStart(2,'0');
+    document.write(
+      `<div class="card back pos${idx}">
+         <div class="trans">${w[2]}</div>
+       </div>`
+    );
+  }
+  document.write('</div>');
 }
+  
 window.print();
 </script>
 </body>
