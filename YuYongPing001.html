@@ -1,0 +1,870 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>3D极简画廊</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            touch-action: none;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        
+        #canvas-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+        
+        #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 18px;
+            letter-spacing: 2px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px 40px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            z-index: 100;
+        }
+        
+        #loading::after {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        #info {
+            position: absolute;
+            bottom: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 11px;
+            text-align: center;
+            pointer-events: none;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+        
+        #controls {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 10px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+        }
+        
+        #controls button {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 12px;
+            outline: none;
+        }
+        
+        #controls button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-1px);
+        }
+
+        /* 弹窗卡片样式 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .modal-overlay.active .modal-card {
+            transform: scale(1);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+            transition: color 0.3s ease;
+        }
+
+        .modal-close:hover {
+            color: #000;
+        }
+
+        .modal-image {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+            text-align: center;
+        }
+
+        .modal-description {
+            font-size: 16px;
+            color: #666;
+            line-height: 1.6;
+            text-align: center;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div id="canvas-container">
+        <div id="loading">加载画廊中...</div>
+        <div id="info">拖动旋转 点击放大</div>
+        <div id="controls">
+            <button onclick="toggleAutoRotate()">自动旋转</button>
+        </div>
+    </div>
+
+    <!-- 弹窗卡片 -->
+    <div id="modalOverlay" class="modal-overlay" onclick="closeModal(event)">
+        <div class="modal-card" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <img id="modalImage" class="modal-image" src="" alt="">
+            <h2 id="modalTitle" class="modal-title"></h2>
+            <p id="modalDescription" class="modal-description"></p>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // 全局变量
+        let scene, camera, renderer;
+        let gallery, paintings = [];
+        let raycaster, mouse;
+        let autoRotate = false;
+        let textureLoader;
+
+        // 画作图片URL数组
+        const paintingUrls = [
+            'https://picsum.photos/400/500?random=1',
+            'https://picsum.photos/400/500?random=2',
+            'https://picsum.photos/400/500?random=3',
+            'https://picsum.photos/400/500?random=4',
+            'https://picsum.photos/400/500?random=5',
+            'https://picsum.photos/400/500?random=6',
+            'https://picsum.photos/400/500?random=7',
+            'https://picsum.photos/400/500?random=8'
+        ];
+
+        // 画作文案介绍
+        const paintingDescriptions = [
+            "这是一幅充满诗意的作品，展现了艺术家对自然的独特理解",
+            "抽象的色彩碰撞，诠释了现代都市的繁华与喧嚣",
+            "静谧的午后时光，在画布上留下了温柔的印记",
+            "光影交错的瞬间，捕捉了时间流逝的美感",
+            "大胆的色彩运用，展现了艺术家内心的激情",
+            "简约而不简单的构图，体现了极简主义的精髓",
+            "这幅作品融合了东西方美学的精髓",
+            "细腻的笔触描绘出了生活的诗意"
+        ];
+
+        // 初始化场景
+        function init() {
+            // 创建场景
+            scene = new THREE.Scene();
+            scene.fog = new THREE.Fog(0x1a1a2e, 15, 60);
+
+            // 创建相机
+            camera = new THREE.PerspectiveCamera(
+                60,
+                window.innerWidth / window.innerHeight,
+                0.1,
+                1000
+            );
+            camera.position.set(0, 3, 12);
+
+            // 创建渲染器
+            renderer = new THREE.WebGLRenderer({ 
+                antialias: true,
+                alpha: true,
+                powerPreference: "high-performance"
+            });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            renderer.outputEncoding = THREE.sRGBEncoding;
+            renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            renderer.toneMappingExposure = 1.2;
+            document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+            // 纹理加载器
+            textureLoader = new THREE.TextureLoader();
+
+            // 射线检测
+            raycaster = new THREE.Raycaster();
+            mouse = new THREE.Vector2();
+
+            // 创建画廊
+            createGallery();
+            createPaintings();
+            create3DMirroredText();
+            createLights();
+            createControls();
+            createBackgroundMusic();
+
+            // 添加事件监听
+            window.addEventListener('resize', onWindowResize);
+            renderer.domElement.addEventListener('click', onMouseClick);
+            renderer.domElement.addEventListener('touchend', onTouchEnd);
+            
+            // 隐藏加载提示
+            document.getElementById('loading').style.display = 'none';
+        }
+
+        // 创建画廊结构
+        function createGallery() {
+            gallery = new THREE.Group();
+
+            // 地板 - 更深的暗色木纹效果
+            const floorGeometry = new THREE.PlaneGeometry(40, 40);
+            const floorMaterial = new THREE.MeshStandardMaterial({
+                color: 0x1a1a1a,
+                roughness: 0.9,
+                metalness: 0.1
+            });
+            const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+            floor.rotation.x = -Math.PI / 2;
+            floor.position.y = -2;
+            floor.receiveShadow = true;
+            gallery.add(floor);
+
+            // 墙壁材质 - 更深的原木色调
+            const wallMaterial = new THREE.MeshStandardMaterial({
+                color: 0x5a4a3a,
+                roughness: 0.95,
+                metalness: 0.02
+            });
+
+            // 后墙
+            const backWall = new THREE.Mesh(
+                new THREE.PlaneGeometry(40, 20),
+                wallMaterial
+            );
+            backWall.position.set(0, 8, -20);
+            backWall.receiveShadow = true;
+            gallery.add(backWall);
+
+            // 左墙
+            const leftWall = new THREE.Mesh(
+                new THREE.PlaneGeometry(40, 20),
+                wallMaterial
+            );
+            leftWall.rotation.y = Math.PI / 2;
+            leftWall.position.set(-20, 8, 0);
+            leftWall.receiveShadow = true;
+            gallery.add(leftWall);
+
+            // 右墙
+            const rightWall = new THREE.Mesh(
+                new THREE.PlaneGeometry(40, 20),
+                wallMaterial
+            );
+            rightWall.rotation.y = -Math.PI / 2;
+            rightWall.position.set(20, 8, 0);
+            rightWall.receiveShadow = true;
+            gallery.add(rightWall);
+
+            // 前墙（非原木色）
+            const frontWallMaterial = new THREE.MeshStandardMaterial({
+                color: 0x2a2a2a,
+                roughness: 0.8,
+                metalness: 0.1
+            });
+            
+            const frontWall = new THREE.Mesh(
+                new THREE.PlaneGeometry(40, 20),
+                frontWallMaterial
+            );
+            frontWall.rotation.y = Math.PI;
+            frontWall.position.set(0, 8, 20);
+            frontWall.receiveShadow = true;
+            gallery.add(frontWall);
+
+            // 天花板
+            const ceiling = new THREE.Mesh(
+                new THREE.PlaneGeometry(40, 40),
+                new THREE.MeshStandardMaterial({
+                    color: 0x2a2a2a,
+                    roughness: 0.95
+                })
+            );
+            ceiling.rotation.x = Math.PI / 2;
+            ceiling.position.y = 18;
+            gallery.add(ceiling);
+
+            scene.add(gallery);
+        }
+
+        // 创建镜像3D立体文字
+        function create3DMirroredText() {
+            // 主标题
+            const mainCanvas = document.createElement('canvas');
+            const mainContext = mainCanvas.getContext('2d');
+            mainCanvas.width = 1024;
+            mainCanvas.height = 256;
+            
+            mainContext.fillStyle = '#ffffff';
+            mainContext.font = 'bold 80px "Microsoft YaHei", sans-serif';
+            mainContext.textAlign = 'center';
+            mainContext.textBaseline = 'middle';
+            mainContext.shadowColor = 'rgba(0, 0, 0, 0.8)';
+            mainContext.shadowBlur = 15;
+            mainContext.shadowOffsetX = 5;
+            mainContext.shadowOffsetY = 5;
+            
+            mainContext.save();
+            mainContext.translate(mainCanvas.width, 0);
+            mainContext.scale(-1, 1);
+            mainContext.fillText('3D极简画廊', mainCanvas.width / 2, mainCanvas.height / 2);
+            mainContext.restore();
+            
+            const mainTexture = new THREE.CanvasTexture(mainCanvas);
+            const mainMaterial = new THREE.MeshStandardMaterial({
+                map: mainTexture,
+                transparent: true,
+                alphaTest: 0.1,
+                side: THREE.DoubleSide
+            });
+            
+            const mainGeometry = new THREE.PlaneGeometry(20, 5);
+            const mainTextMesh = new THREE.Mesh(mainGeometry, mainMaterial);
+            mainTextMesh.position.set(0, 8, 19.8);
+            mainTextMesh.castShadow = true;
+            mainTextMesh.receiveShadow = false;
+            gallery.add(mainTextMesh);
+
+            // 副标题
+            const subCanvas = document.createElement('canvas');
+            const subContext = subCanvas.getContext('2d');
+            subCanvas.width = 800;
+            subCanvas.height = 120;
+            
+            subContext.fillStyle = '#cccccc';
+            subContext.font = '32px "Arial", sans-serif';
+            subContext.textAlign = 'center';
+            subContext.textBaseline = 'middle';
+            subContext.shadowColor = 'rgba(0, 0, 0, 0.6)';
+            subContext.shadowBlur = 8;
+            subContext.shadowOffsetX = 2;
+            subContext.shadowOffsetY = 2;
+            
+            subContext.save();
+            subContext.translate(subCanvas.width, 0);
+            subContext.scale(-1, 1);
+            subContext.fillText('3D Minimalist Gallery', subCanvas.width / 2, subCanvas.height / 2);
+            subContext.restore();
+            
+            const subTexture = new THREE.CanvasTexture(subCanvas);
+            const subMaterial = new THREE.MeshStandardMaterial({
+                map: subTexture,
+                transparent: true,
+                alphaTest: 0.1,
+                side: THREE.DoubleSide
+            });
+            
+            const subGeometry = new THREE.PlaneGeometry(12, 1.8);
+            const subTextMesh = new THREE.Mesh(subGeometry, subMaterial);
+            subTextMesh.position.set(0, 6, 19.7);
+            subTextMesh.castShadow = true;
+            subTextMesh.receiveShadow = false;
+            gallery.add(subTextMesh);
+
+            // 发光效果
+            const mainGlowLight = new THREE.PointLight(0xffffff, 0.5, 30);
+            mainGlowLight.position.set(0, 8, 18);
+            scene.add(mainGlowLight);
+
+            const subGlowLight = new THREE.PointLight(0xcccccc, 0.3, 20);
+            subGlowLight.position.set(0, 6, 17);
+            scene.add(subGlowLight);
+        }
+
+        // 创建画作
+        function createPaintings() {
+            const positions = [
+                { x: -15, y: 4, z: -19.5, wall: 'back', rotation: 0 },
+                { x: -5, y: 4, z: -19.5, wall: 'back', rotation: 0 },
+                { x: 5, y: 4, z: -19.5, wall: 'back', rotation: 0 },
+                { x: 15, y: 4, z: -19.5, wall: 'back', rotation: 0 },
+                { x: -19.5, y: 4, z: -10, wall: 'left', rotation: Math.PI / 2 },
+                { x: -19.5, y: 4, z: 0, wall: 'left', rotation: Math.PI / 2 },
+                { x: 19.5, y: 4, z: -10, wall: 'right', rotation: -Math.PI / 2 },
+                { x: 19.5, y: 4, z: 0, wall: 'right', rotation: -Math.PI / 2 }
+            ];
+
+            positions.forEach((pos, index) => {
+                createPainting(pos, index);
+            });
+        }
+
+        function createPainting(position, index) {
+            const paintingGroup = new THREE.Group();
+
+            const baseWidth = 3.2; 
+            const baseHeight = 4.27; 
+            const scale = 2.21;
+            
+            const frameWidth = baseWidth * scale;
+            const frameHeight = baseHeight * scale;
+            const frameDepth = 0.3;
+
+            // 画框
+            const frameGeometry = new THREE.BoxGeometry(frameWidth, frameHeight, frameDepth);
+            const frameMaterial = new THREE.MeshStandardMaterial({
+                color: 0x4a3728,
+                roughness: 0.8,
+                metalness: 0.1
+            });
+            const frame = new THREE.Mesh(frameGeometry, frameMaterial);
+            frame.castShadow = false;
+            frame.receiveShadow = false;
+
+            // 画布
+            const canvasWidth = frameWidth * 0.92;
+            const canvasHeight = frameHeight * 0.93;
+            const canvasGeometry = new THREE.PlaneGeometry(canvasWidth, canvasHeight);
+            let canvasMaterial;
+            
+            try {
+                const texture = textureLoader.load(
+                    paintingUrls[index],
+                    function(texture) {
+                        texture.minFilter = THREE.LinearFilter;
+                        texture.magFilter = THREE.LinearFilter;
+                        texture.needsUpdate = true;
+                    },
+                    undefined,
+                    function(error) {
+                        console.warn(`画作 ${index + 1} 图片加载失败，使用备用颜色`);
+                        canvasMaterial.map = null;
+                        canvasMaterial.color.setHex(Math.random() * 0xffffff);
+                        canvasMaterial.needsUpdate = true;
+                    }
+                );
+                
+                canvasMaterial = new THREE.MeshStandardMaterial({
+                    map: texture,
+                    roughness: 0.7,
+                    metalness: 0.05
+                });
+            } catch (error) {
+                canvasMaterial = new THREE.MeshStandardMaterial({
+                    color: new THREE.Color().setHSL(index * 0.1, 0.7, 0.6),
+                    roughness: 0.7,
+                    metalness: 0.05
+                });
+            }
+            
+            const canvas = new THREE.Mesh(canvasGeometry, canvasMaterial);
+            canvas.position.z = 0.16;
+            canvas.castShadow = false;
+            canvas.receiveShadow = false;
+
+            // 玻璃保护层
+            const glassGeometry = new THREE.PlaneGeometry(canvasWidth, canvasHeight);
+            const glassMaterial = new THREE.MeshPhysicalMaterial({
+                transparent: true,
+                opacity: 0.1,
+                roughness: 0.05,
+                metalness: 0.1,
+                clearcoat: 1.0,
+                clearcoatRoughness: 0.1,
+                reflectivity: 0.3
+            });
+            const glass = new THREE.Mesh(glassGeometry, glassMaterial);
+            glass.position.z = 0.2;
+
+            paintingGroup.add(frame);
+            paintingGroup.add(canvas);
+            paintingGroup.add(glass);
+
+            paintingGroup.position.set(position.x, position.y, position.z);
+            paintingGroup.rotation.y = position.rotation;
+            paintingGroup.userData = { 
+                index: index, 
+                type: 'painting',
+                title: `艺术作品 ${index + 1}`,
+                imageUrl: paintingUrls[index],
+                description: paintingDescriptions[index]
+            };
+
+            gallery.add(paintingGroup);
+            paintings.push(paintingGroup);
+        }
+
+        // 创建灯光
+        function createLights() {
+            // 环境光
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
+            scene.add(ambientLight);
+
+            // 主光源
+            const mainLight = new THREE.DirectionalLight(0xffffff, 0.3);
+            mainLight.position.set(10, 15, 10);
+            mainLight.castShadow = true;
+            mainLight.shadow.camera.near = 0.1;
+            mainLight.shadow.camera.far = 50;
+            mainLight.shadow.camera.left = -25;
+            mainLight.shadow.camera.right = 25;
+            mainLight.shadow.camera.top = 25;
+            mainLight.shadow.camera.bottom = -25;
+            mainLight.shadow.mapSize.width = 2048;
+            mainLight.shadow.mapSize.height = 2048;
+            mainLight.shadow.bias = -0.0001;
+            scene.add(mainLight);
+
+            // 为每幅画添加专属聚光灯
+            paintings.forEach((painting, index) => {
+                const spotlight = new THREE.SpotLight(0xffffff, 1.5);
+                spotlight.position.set(painting.position.x, 16, painting.position.z);
+                spotlight.target = painting;
+                spotlight.angle = Math.PI / 6;
+                spotlight.penumbra = 0.2;
+                spotlight.decay = 2;
+                spotlight.distance = 25;
+                spotlight.castShadow = true;
+                spotlight.shadow.mapSize.width = 1024;
+                spotlight.shadow.mapSize.height = 1024;
+                spotlight.shadow.bias = -0.0005;
+                scene.add(spotlight);
+
+                const whiteSpotlight = new THREE.SpotLight(0xffffff, 0.6);
+                whiteSpotlight.position.set(painting.position.x, 14, painting.position.z + 2);
+                whiteSpotlight.target = painting;
+                whiteSpotlight.angle = Math.PI / 4;
+                whiteSpotlight.penumbra = 0.5;
+                whiteSpotlight.decay = 3;
+                whiteSpotlight.distance = 30;
+                scene.add(whiteSpotlight);
+            });
+        }
+
+        // 创建控制器
+        function createControls() {
+            let isDragging = false;
+            let previousMousePosition = { x: 0, y: 0 };
+            let targetRotation = { x: 0, y: 0 };
+            let currentRotation = { x: 0, y: 0 };
+            let targetDistance = 12;
+            let currentDistance = 12;
+
+            // 鼠标事件
+            renderer.domElement.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                previousMousePosition = { x: e.clientX, y: e.clientY };
+                renderer.domElement.style.cursor = 'grabbing';
+            });
+
+            renderer.domElement.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+
+                const deltaX = e.clientX - previousMousePosition.x;
+                const deltaY = e.clientY - previousMousePosition.y;
+
+                targetRotation.y += deltaX * 0.01;
+                targetRotation.x += deltaY * 0.01;
+                targetRotation.x = Math.max(-Math.PI / 6, Math.min(Math.PI / 6, targetRotation.x));
+
+                previousMousePosition = { x: e.clientX, y: e.clientY };
+            });
+
+            renderer.domElement.addEventListener('mouseup', () => {
+                isDragging = false;
+                renderer.domElement.style.cursor = 'grab';
+            });
+
+            renderer.domElement.addEventListener('mouseleave', () => {
+                isDragging = false;
+                renderer.domElement.style.cursor = 'grab';
+            });
+
+            // 触摸事件
+            renderer.domElement.addEventListener('touchstart', (e) => {
+                if (e.touches.length === 1) {
+                    isDragging = true;
+                    previousMousePosition = { 
+                        x: e.touches[0].clientX, 
+                        y: e.touches[0].clientY 
+                    };
+                }
+                e.preventDefault();
+            });
+
+            renderer.domElement.addEventListener('touchmove', (e) => {
+                if (!isDragging || e.touches.length !== 1) return;
+
+                const deltaX = e.touches[0].clientX - previousMousePosition.x;
+                const deltaY = e.touches[0].clientY - previousMousePosition.y;
+
+                targetRotation.y += deltaX * 0.01;
+                targetRotation.x += deltaY * 0.01;
+                targetRotation.x = Math.max(-Math.PI / 6, Math.min(Math.PI / 6, targetRotation.x));
+
+                previousMousePosition = { 
+                    x: e.touches[0].clientX, 
+                    y: e.touches[0].clientY 
+                };
+                e.preventDefault();
+            });
+
+            renderer.domElement.addEventListener('touchend', () => {
+                isDragging = false;
+            });
+
+            // 滚轮缩放
+            renderer.domElement.addEventListener('wheel', (e) => {
+                targetDistance += e.deltaY * 0.02;
+                targetDistance = Math.max(5, Math.min(25, targetDistance));
+                e.preventDefault();
+            });
+
+            // 双指缩放
+            let initialPinchDistance = 0;
+            renderer.domElement.addEventListener('touchstart', (e) => {
+                if (e.touches.length === 2) {
+                    const dx = e.touches[0].clientX - e.touches[1].clientX;
+                    const dy = e.touches[0].clientY - e.touches[1].clientY;
+                    initialPinchDistance = Math.sqrt(dx * dx + dy * dy);
+                }
+            });
+
+            renderer.domElement.addEventListener('touchmove', (e) => {
+                if (e.touches.length === 2) {
+                    const deltaX = e.touches[0].clientX - e.touches[1].clientX;
+                    const deltaY = e.touches[0].clientY - e.touches[1].clientY;
+                    const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+                    const scale = distance / initialPinchDistance;
+                    
+                    targetDistance = Math.max(5, Math.min(25, currentDistance / scale));
+                    e.preventDefault();
+                }
+            });
+
+            renderer.domElement.addEventListener('touchend', (e) => {
+                if (e.touches.length === 0) {
+                    currentDistance = targetDistance;
+                }
+            });
+
+            // 更新相机位置
+            function updateCameraPosition() {
+                // 平滑过渡
+                currentRotation.x += (targetRotation.x - currentRotation.x) * 0.1;
+                currentRotation.y += (targetRotation.y - currentRotation.y) * 0.1;
+                currentDistance += (targetDistance - currentDistance) * 0.1;
+
+                // 计算相机位置
+                const x = Math.sin(currentRotation.y) * currentDistance;
+                const z = Math.cos(currentRotation.y) * currentDistance;
+                const y = 3 + Math.sin(currentRotation.x) * currentDistance * 0.3;
+
+                camera.position.set(x, y, z);
+                camera.lookAt(0, 3, 0);
+            }
+
+            // 设置初始样式
+            renderer.domElement.style.cursor = 'grab';
+
+            // 动画循环
+            function animate() {
+                requestAnimationFrame(animate);
+                updateCameraPosition();
+                
+                if (autoRotate) {
+                    targetRotation.y += 0.005;
+                }
+                
+                renderer.render(scene, camera);
+            }
+
+            animate();
+        }
+
+        // 鼠标点击事件
+        function onMouseClick(event) {
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(paintings, true);
+
+            if (intersects.length > 0) {
+                const painting = intersects[0].object.parent;
+                if (painting.userData.type === 'painting') {
+                    showModal(painting.userData);
+                }
+            }
+        }
+
+        // 触摸结束事件（针对移动设备）
+        function onTouchEnd(event) {
+            // 防止触摸后立即触发点击事件
+            event.preventDefault();
+            
+            // 获取触摸点
+            const touch = event.changedTouches[0];
+            mouse.x = (touch.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(touch.clientY / window.innerHeight) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(paintings, true);
+
+            if (intersects.length > 0) {
+                const painting = intersects[0].object.parent;
+                if (painting.userData.type === 'painting') {
+                    showModal(painting.userData);
+                }
+            }
+        }
+
+        // 显示弹窗
+        function showModal(paintingData) {
+            const modalOverlay = document.getElementById('modalOverlay');
+            const modalImage = document.getElementById('modalImage');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalDescription = document.getElementById('modalDescription');
+
+            modalImage.src = paintingData.imageUrl;
+            modalTitle.textContent = paintingData.title;
+            modalDescription.textContent = paintingData.description;
+
+            modalOverlay.classList.add('active');
+        }
+
+        // 关闭弹窗
+        function closeModal(event) {
+            if (!event || event.target.id === 'modalOverlay' || event.target.classList.contains('modal-close')) {
+                const modalOverlay = document.getElementById('modalOverlay');
+                modalOverlay.classList.remove('active');
+            }
+        }
+
+        // 相机动画
+        function animateCameraTo(targetPosition, lookAtPosition) {
+            const startPosition = camera.position.clone();
+            const startTime = Date.now();
+            const duration = 1500;
+
+            function updateCameraPosition() {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const easeProgress = 1 - Math.pow(1 - progress, 4);
+
+                camera.position.lerpVectors(startPosition, targetPosition, easeProgress);
+                camera.lookAt(lookAtPosition);
+
+                if (progress < 1) {
+                    requestAnimationFrame(updateCameraPosition);
+                }
+            }
+
+            updateCameraPosition();
+        }
+
+        // 窗口大小调整
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        // 创建背景音乐
+        function createBackgroundMusic() {
+            // const audio = new Audio('background-music.mp3');
+            // audio.loop = true;
+            // audio.volume = 0.3;
+            // backgroundMusic = audio;
+        }
+
+        // 控制函数
+        function toggleAutoRotate() {
+            autoRotate = !autoRotate;
+        }
+
+        // 初始化
+        init();
+    </script>
+</body>
+</html>
