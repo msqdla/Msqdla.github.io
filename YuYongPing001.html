@@ -271,6 +271,7 @@
 
             // 纹理加载器
             textureLoader = new THREE.TextureLoader();
+            textureLoader.setCrossOrigin('anonymous');
 
             // 射线检测
             raycaster = new THREE.Raycaster();
