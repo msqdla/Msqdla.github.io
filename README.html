@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>原木质感·手作粗杆草药香</title>
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+html,body{
+    width:100%;
+    height:100%;
+    font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue","PingFang SC","Microsoft YaHei",sans-serif;
+    background:#f5f3f0;
+    color:#3e3a37;
+    overflow:hidden;
+}
+.slide{
+    width:100%;
+    height:100%;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    padding:0 8vw;
+    text-align:center;
+    position:absolute;
+    top:0;
+    left:0;
+    transition:transform .5s ease;
+}
+h1{
+    font-size:8vw;
+    font-weight:300;
+    letter-spacing:.1em;
+    margin-bottom:3vh;
+}
+h2{
+    font-size:6vw;
+    font-weight:400;
+    margin-bottom:3vh;
+}
+p,li{
+    font-size:4.5vw;
+    line-height:1.9;
+    margin:1.2vh 0;
+    font-weight:300;
+}
+ul{
+    list-style:none;
+}
+li:before{
+    content:"— ";
+    margin-right:1vw;
+}
+.signature{
+    position:absolute;
+    bottom:4vh;
+    right:8vw;
+    font-size:3vw;
+    color:#9e9993;
+    letter-spacing:.1em;
+}
+.nav{
+    position:absolute;
+    bottom:4vh;
+    left:50%;
+    transform:translateX(-50%);
+    display:flex;
+    gap:3vw;
+}
+.nav button{
+    background:none;
+    border:1px solid #3e3a37;
+    color:#3e3a37;
+    padding:1.5vw 4vw;
+    font-size:3.5vw;
+    border-radius:20vw;
+    cursor:pointer;
+}
+</style>
+</head>
+<body>
+
+<div class="slide" id="s0">
+<h1>原木质感<br>手作粗杆草药香</h1>
+<p>在颗粒肌理中，捕捉草木的自然疗愈力</p>
+<div class="signature">于翔</div>
+</div>
+
+<div class="slide" id="s1">
+<h2>沙龙目标</h2>
+<ul>
+<li>认识“天然颗粒感、纯植物基底”特质</li>
+<li>掌握完整流程，独立完成1-2支成品</li>
+<li>感受“可见原料、可触肌理”的质朴美学</li>
+</ul>
+<div class="signature">于翔</div>
+</div>
+
+<div class="slide" id="s2">
+<h2>参与人群</h2>
+<p>自然香氛爱好者<br>手工DIY深度玩家<br>追求原生态生活美学的人群</p>
+<div class="signature">于翔</div>
+</div>
+
+<div class="slide" id="s3">
+<h2>原料配方</h2>
+<ul>
+<li>秘鲁圣木碎 6g｜奶香木质调</li>
+<li>有机迷迭香碎 3g｜清新松针感</li>
+<li>天然楠木粘粉 1g｜纯植物粘合</li>
+</ul>
+<div class="signature">于翔</div>
+</div>
+
+<div class="slide" id="s4">
+<h2>制作口诀</h2>
+<p>干料混匀 → 少量多次喷水 → 捏成“不散团”<br>
+双手C型搓条 → 直径8mm → 轻放晾架<br>
+阴干48h，不可暴晒</p>
+<div class="signature">于翔</div>
+</div>
+
+<div class="slide" id="s5">
+<h2>使用指南</h2>
+<p>点燃顶端，吹灭明火，置防火香盘<br>
+颗粒逐层释香，适合冥想、小憩<br>
+让“不完美”肌理成为自然艺术装置</p>
+<div class="signature">于翔</div>
+</div>
+
+<div class="nav">
+<button onclick="go(-1)">上一页</button>
+<button onclick="go(1)">下一页</button>
+</div>
+
+<script>
+let idx=0;
+const slides=document.querySelectorAll('.slide');
+function go(dir){
+idx=Math.max(0,Math.min(slides.length-1,idx+dir));
+document.querySelectorAll('.slide').forEach((s,i)=>{
+s.style.transform=`translateX(${(i-idx)*100}%)`;
+});
+}
+go(0);
+</script>
+</body>
+</html>
