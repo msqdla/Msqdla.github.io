@@ -397,7 +397,7 @@
             mainContext.save();
             mainContext.translate(mainCanvas.width, 0);
             mainContext.scale(-1, 1);
-            mainContext.fillText('3D极简画廊', mainCanvas.width / 2, mainCanvas.height / 2);
+            mainContext.fillText('于永平画马展', mainCanvas.width / 2, mainCanvas.height / 2);
             mainContext.restore();
             
             const mainTexture = new THREE.CanvasTexture(mainCanvas);
@@ -565,7 +565,7 @@
             paintingGroup.userData = { 
                 index: index, 
                 type: 'painting',
-                title: `艺术作品 ${index + 1}`,
+                title: `马 ${index + 1}`,
                 imageUrl: paintingUrls[index],
                 description: paintingDescriptions[index]
             };
