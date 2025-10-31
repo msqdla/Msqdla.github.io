@@ -21,7 +21,7 @@ body {
 .bg4 { background: linear-gradient(135deg, #ff0066, #ffcc00); }
 .bg5 { background: linear-gradient(135deg, #7928ff, #ff1e8f); }
 
-/* 外层容器：上下两端布局 */
+/* 外层容器：上下两端布局 + 安全边距 */
 .container {
   width: 100vw;
   height: 100vh;
@@ -29,59 +29,62 @@ body {
   flex-direction: column;
   justify-content: space-between;
   align-items: flex-start;
-  padding: 6vh 8vw;
+  padding: 4vh 6vw; /* 减小边距，防止出框 */
 }
-/* 诗词区：左对齐 */
+/* 诗词区：左对齐 + 宽度限制 */
 .card {
-  width: 100%;
+  width: 88%; /* 留足边距，避免贴边 */
   text-align: left;
   color: #fff;
-  text-shadow: 0 0 6px rgba(0,0,0,.5);
+  text-shadow: 0 0 4px rgba(0,0,0,.45);
 }
 /* 中文：>20字 -> 小字；≤20字 -> 大字 */
-.poem-cn.small { font-size: 6vw; }
-.poem-cn.large { font-size: 9vw; }
+.poem-cn.small { font-size: 5.2vw; } /* 稍缩小，防溢出 */
+.poem-cn.large { font-size: 7.5vw; }
 .poem-cn {
   font-weight: 900;
   line-height: 1.15;
-  margin-bottom: 4vh;
+  margin-bottom: 3vh;
+  word-break: break-all; /* 单词截断，防止撑破 */
 }
 .poem-en {
-  font-size: 3.8vw;
+  font-size: 3.2vw;
   font-style: italic;
-  margin-bottom: 3vh;
+  margin-bottom: 2.5vh;
   line-height: 1.3;
+  word-break: break-all;
 }
 /* 作者右对齐，日期左对齐 */
 .meta { width: 100%; }
 .author {
-  font-size: 4vw;
+  font-size: 3.5vw;
   text-align: right;
-  margin-bottom: 1vh;
+  margin-bottom: 0.8vh;
 }
 .date {
-  font-size: 3.5vw;
+  font-size: 3vw;
   text-align: left;
 }
 /* 按钮：居中，字号随诗句同步 */
 .bottom-bar {
   width: 100%;
   text-align: center;
+  margin-bottom: 2vh; /* 防止贴底 */
 }
 #cta {
   font-family: inherit;
   font-weight: 900;
-  text-shadow: 0 0 6px rgba(0,0,0,.5);
-  font-size: var(--btn-size, 9vw);
-  padding: 1.5vh 6vw;
-  border: 3px solid #fff;
-  border-radius: 12px;
+  text-shadow: 0 0 4px rgba(0,0,0,.45);
+  font-size: var(--btn-size, 7.5vw);
+  padding: 1.2vh 5vw;
+  border: 2px solid #fff;
+  border-radius: 10px;
   background: transparent;
   color: #fff;
   cursor: pointer;
   transition: all .2s;
 }
-#cta:hover { background: rgba(255,255,255,.2); }
+#cta:hover { background: rgba(255,255,255,.15); }
 </style>
 </head>
 <body class="bg1">
@@ -140,13 +143,6 @@ const poems = [
   { cn: "切忌傲慢。", en: "Avoid arrogance.", author: "修昔底德" },
   { cn: "当我们迫切期待希望的时候，诚实就显得更为重要。", en: "When we eagerly await hope, honesty becomes more important.", author: "弗吉尼亚·伍尔芙" },
   { cn: "我看到一个新世界迅速地到来，更加科学，更有效率，但这是一个更冷酷、更无情的世界。", en: "I see a new world arriving rapidly, more scientific, more efficient, but colder and more ruthless.", author: "石黑一雄" },
-  { cn: "散会。", en: "Meeting adjourned.", author: "单向历" },
-  { cn: "丢脸要趁早。", en: "Lose face early.", author: "单向历" },
-  { cn: "早干嘛去了。", en: "Where were you earlier?", author: "单向历" },
-  { cn: "情绪不稳定。", en: "Emotionally unstable.", author: "单向历" },
-  { cn: "我们刚逃过大雨。", en: "We just escaped the heavy rain.", author: "单向历" },
-  { cn: "偏爱例外。", en: "Preference for exceptions.", author: "单向历" },
-  { cn: "拿着时间。", en: "Holding time.", author: "单向历" },
   { cn: "天下无不散之筵席，人生离别是常事，人们应该学会释怀。", en: "There is no feast that does not end in this world; parting is common, and people should learn to let go.", author: "曹雪芹" },
   { cn: "我必须敢于盲目地去爱，除此之外还能怎样去爱呢？", en: "I must dare to love blindly; how else can one love?", author: "Eve Fairbanks" },
   { cn: "先切完手头辣椒再说，人世如此漫长，不必慌张。", en: "Finish chopping the chili in hand first; life is so long, no need to panic.", author: "文珍" },
