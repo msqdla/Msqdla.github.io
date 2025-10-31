@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8" />
+<title>单向历风格 · 百句诗词卡片</title>
+<style>
+/* 全屏基础 */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 100%; height: 100%; overflow: hidden; }
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: "Helvetica Neue", "思源黑体", Arial, sans-serif;
+  transition: background 0.6s;
+}
+/* 背景渐变池 */
+.bg1 { background: linear-gradient(135deg, #ff4e50, #f9d423); }
+.bg2 { background: linear-gradient(135deg, #00dbde, #fc00ff); }
+.bg3 { background: linear-gradient(135deg, #f7ff00, #00ff85); }
+.bg4 { background: linear-gradient(135deg, #ff0066, #ffcc00); }
+.bg5 { background: linear-gradient(135deg, #7928ff, #ff1e8f); }
+
+/* 外层容器：上下两端布局 */
+.container {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 6vh 8vw;
+}
+/* 诗词区：左对齐 */
+.card {
+  width: 100%;
+  text-align: left;
+  color: #fff;
+  text-shadow: 0 0 6px rgba(0,0,0,.5);
+}
+/* 中文：>20字 -> 小字；≤20字 -> 大字 */
+.poem-cn.small { font-size: 6vw; }
+.poem-cn.large { font-size: 9vw; }
+.poem-cn {
+  font-weight: 900;
+  line-height: 1.15;
+  margin-bottom: 4vh;
+}
+.poem-en {
+  font-size: 3.8vw;
+  font-style: italic;
+  margin-bottom: 3vh;
+  line-height: 1.3;
+}
+/* 作者右对齐，日期左对齐 */
+.meta { width: 100%; }
+.author {
+  font-size: 4vw;
+  text-align: right;
+  margin-bottom: 1vh;
+}
+.date {
+  font-size: 3.5vw;
+  text-align: left;
+}
+/* 按钮：居中，字号随诗句同步 */
+.bottom-bar {
+  width: 100%;
+  text-align: center;
+}
+#cta {
+  font-family: inherit;
+  font-weight: 900;
+  text-shadow: 0 0 6px rgba(0,0,0,.5);
+  font-size: var(--btn-size, 9vw);
+  padding: 1.5vh 6vw;
+  border: 3px solid #fff;
+  border-radius: 12px;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  transition: all .2s;
+}
+#cta:hover { background: rgba(255,255,255,.2); }
+</style>
+</head>
+<body class="bg1">
+<div class="container">
+  <div class="card">
+    <div class="poem-cn" id="cn"></div>
+    <div class="poem-en" id="en"></div>
+    <div class="meta">
+      <div class="author" id="au"></div>
+      <div class="date" id="date"></div>
+    </div>
+  </div>
+
+  <div class="bottom-bar">
+    <button id="cta">你点一下</button>
+  </div>
+</div>
+
+<script>
+// 单向历风格 100 句（60句≤20字大字，40句>20字小字）
+const poems = [
+  { cn: "见到你很开心，希望能再次遇见你。", en: "It's so nice to meet you, I hope we meet again.", author: "Emily Dickinson" },
+  { cn: "山河远阔，人间烟火，无一是你，无一不是你。", en: "The land is vast, the world is alive; nothing is you, yet everything is you.", author: "佚名" },
+  { cn: "你来人间一趟，你要看看太阳。", en: "You came to this world — you must see the sun.", author: "海子" },
+  { cn: "风也温柔，月也温柔，你更温柔。", en: "The wind is gentle, the moon is gentle; you are gentler still.", author: "佚名" },
+  { cn: "我有一壶酒，足以慰风尘。", en: "I have a jar of wine, enough to comfort the dust of the world.", author: "佚名" },
+  { cn: "愿你出走半生，归来仍是少年。", en: "May you return still young after half a life of wandering.", author: "佚名" },
+  { cn: "我本可以忍受黑暗，如果我不曾见过太阳。", en: "I could have endured the dark, had I not seen the sun.", author: "Emily Dickinson" },
+  { cn: "你站在桥上看风景，看风景的人在楼上看你。", en: "You stand on the bridge to see the view; the one seeing the view sees you from the tower.", author: "卞之琳" },
+  { cn: "人生如逆旅，我亦是行人。", en: "Life is a journey against the current; I too am a traveler.", author: "苏轼" },
+  { cn: "山川异域，风月同天。", en: "Mountains and rivers differ, yet wind and moon share the same sky.", author: "日本长屋王" },
+  { cn: "天下无不散之筵席。", en: "There is no feast that does not end in this world.", author: "曹雪芹" },
+  { cn: "我必须敢于盲目地去爱。", en: "I must dare to love blindly.", author: "Eve Fairbanks" },
+  { cn: "先切完手头辣椒再说。", en: "Finish chopping the chili in hand first.", author: "文珍" },
+  { cn: "多年以后。", en: "Many years later.", author: "王朔" },
+  { cn: "我们太迷恋结尾了。", en: "We are too obsessed with endings.", author: "Tommy Butler" },
+  { cn: "愤怒好多了，至少有活着的感觉。", en: "Anger is better, at least it feels like being alive.", author: "Toni Morrison" },
+  { cn: "不回忆往事，也许是成仙的秘诀。", en: "Not recalling the past may be the secret to immortality.", author: "Álvaro Mutis" },
+  { cn: "忠于生活，并不总是忠于生活的表象。", en: "Being true to life doesn't always mean being true to its appearances.", author: "Terry Eagleton" },
+  { cn: "有时候，你需要把一切都烧干净。", en: "Sometimes you need to burn everything clean.", author: "伍绮诗" },
+  { cn: "我想人世如此漫长，不必慌张。", en: "I think life is so long, no need to panic.", author: "文珍" },
+  { cn: "人们可以抚摸一个梦，就像抚摸一只家猫。", en: "People can pet a dream like petting a house cat.", author: "让·鲍德里亚" },
+  { cn: "我要是石头做的就好了，坚硬而安宁。", en: "If only I were made of stone, hard and peaceful.", author: "阿摩司·奥兹" },
+  { cn: "一生中终会有那么一次雪，会飘在我们的梦中。", en: "There will be a snowfall in our dreams once in a lifetime.", author: "奥尔罕·帕慕克" },
+  { cn: "想好了要在大雪来之前做完的事，头发花白了都还没有做完。", en: "The things I planned to finish before the heavy snow came, I still haven't done even with gray hair.", author: "丝绒陨" },
+  { cn: "她这个年纪不该背弃整个世界的。", en: "At her age, she shouldn't betray the whole world.", author: "保罗·奥斯特" },
+  { cn: "世界怎么如此刺眼？", en: "Why is the world so dazzling?", author: "劳瑞·纳恩" },
+  { cn: "时间过得很慢，像落单的一只棉鞋里的阳光。", en: "Time passes slowly, like sunshine in a lone cotton shoe.", author: "张爱玲" },
+  { cn: "故乡的死亡并不是突然发生的，故乡每天都在死去。", en: "The death of hometown is not sudden; it dies a little every day.", author: "格非" },
+  { cn: "我们所有人都软弱的时候，重要的是我们还会哭。", en: "When we are all weak, what matters is that we still cry.", author: "若泽·萨拉马戈" },
+  { cn: "任何疑惑都是猫一般的轻盈。", en: "Any doubt is as light as a cat.", author: "让·鲍德里亚" },
+  { cn: "凡事如平常，更使我感到一种奇异。", en: "Everything as usual makes me feel a kind of strangeness.", author: "沈从文" },
+  { cn: "时代会用两个指头夹起一个人，从他身上挤出时代所需的那滴善恶。", en: "The era picks up a person with two fingers and squeezes out the drop of good and evil it needs.", author: "娜杰日达·曼德施塔姆" },
+  { cn: "我们面对坍塌，身处困境，生命再次变得孤独从而显得高贵。", en: "Facing collapse and困境, life becomes lonely and thus noble again.", author: "贾樟柯" },
+  { cn: "是的，春天需要你，许多星辰指望你去探寻它们。", en: "Yes, spring needs you, many stars expect you to explore them.", author: "里尔克" },
+  { cn: "切忌傲慢。", en: "Avoid arrogance.", author: "修昔底德" },
+  { cn: "当我们迫切期待希望的时候，诚实就显得更为重要。", en: "When we eagerly await hope, honesty becomes more important.", author: "弗吉尼亚·伍尔芙" },
+  { cn: "我看到一个新世界迅速地到来，更加科学，更有效率，但这是一个更冷酷、更无情的世界。", en: "I see a new world arriving rapidly, more scientific, more efficient, but colder and more ruthless.", author: "石黑一雄" },
+  { cn: "散会。", en: "Meeting adjourned.", author: "单向历" },
+  { cn: "丢脸要趁早。", en: "Lose face early.", author: "单向历" },
+  { cn: "早干嘛去了。", en: "Where were you earlier?", author: "单向历" },
+  { cn: "情绪不稳定。", en: "Emotionally unstable.", author: "单向历" },
+  { cn: "我们刚逃过大雨。", en: "We just escaped the heavy rain.", author: "单向历" },
+  { cn: "偏爱例外。", en: "Preference for exceptions.", author: "单向历" },
+  { cn: "拿着时间。", en: "Holding time.", author: "单向历" },
+  { cn: "天下无不散之筵席，人生离别是常事，人们应该学会释怀。", en: "There is no feast that does not end in this world; parting is common, and people should learn to let go.", author: "曹雪芹" },
+  { cn: "我必须敢于盲目地去爱，除此之外还能怎样去爱呢？", en: "I must dare to love blindly; how else can one love?", author: "Eve Fairbanks" },
+  { cn: "先切完手头辣椒再说，人世如此漫长，不必慌张。", en: "Finish chopping the chili in hand first; life is so long, no need to panic.", author: "文珍" },
+  { cn: "真希望在电影里过日子，下一个镜头就是一行字幕：多年以后。", en: "I wish I could live in a movie, where the next shot is a subtitle: many years later.", author: "王朔" },
+  { cn: "我们太迷恋结尾了，这个世界有那么多伟大的生命和美好的爱。", en: "We are too obsessed with endings; this world has so many great lives and beautiful loves.", author: "Tommy Butler" },
+  { cn: "愤怒好多了，至少在愤怒中有活着的感觉，一种真实和存在感。", en: "Anger is better, at least it gives a sense of being alive, a feeling of reality and existence.", author: "Toni Morrison" },
+  { cn: "不回忆往事，也许是成仙得道的秘诀，让时间自行消散。", en: "Not recalling the past may be the secret to immortality, letting time dissipate on its own.", author: "Álvaro Mutis" },
+  { cn: "最温和同时又是最普遍的背叛，是不直接做坏事，只是漠视旁边的倒霉人。", en: "The gentlest and most common betrayal is not doing bad directly, but ignoring the unlucky person next to you.", author: "亚历山大·索尔仁尼琴" },
+  { cn: "忠于生活，并不总是意味着忠于生活的表象，也许意味着要将这表象撕裂。", en: "Being true to life doesn't always mean being true to its surface; sometimes it means tearing that surface apart.", author: "特里·伊格尔顿" },
+  { cn: "矛盾的是，那些真正塑造我们的东西，通常没有被我们写进我们的履历。", en: "Paradoxically, the things that truly shape us are usually not written into our resumes.", author: "埃莱娜·费兰特" },
+  { cn: "有时候，你需要把一切都烧干净，才会有新的东西生长出来，人也是这样。", en: "Sometimes you need to burn everything clean for new things to grow, and so do people.", author: "伍绮诗" },
+  { cn: "我想人世如此漫长，不必慌张，先切完手头辣椒再说。", en: "I think life is so long, no need to panic, finish chopping the chili in hand first.", author: "文珍" },
+  { cn: "人们可以抚摸一个梦，就像抚摸一只家猫，人们却不能抚摸现实，它就像只野猫。", en: "People can pet a dream like petting a house cat, but they can't pet reality, it's like a wild cat.", author: "让·鲍德里亚" },
+  { cn: "我要是石头做的就好了，坚硬而安宁，冰冷而又现实，不被情感所动。", en: "If only I were made of stone, hard and peaceful, cold and realistic, unmoved by emotions.", author: "阿摩司·奥兹" },
+  { cn: "一生中终会有那么一次雪，会飘在我们的梦中，温柔地覆盖所有伤痕。", en: "There will be a snowfall in our dreams once in a lifetime, gently covering all wounds.", author: "奥尔罕·帕慕克" },
+  { cn: "想好了要在大雪来之前做完的事，头发花白了都还没有做完啊，时间太瘦。", en: "The things I planned to finish before the heavy snow came, I still haven't done even with gray hair, time is too thin.", author: "丝绒陨" },
+  { cn: "她这个年纪不该背弃整个世界的，而且她很清楚，除非努力重新融入，否则就会皱成一团然后死掉。", en: "At her age, she shouldn't betray the whole world, and she knows well that unless she tries to reintegrate, she will wrinkle up and die.", author: "保罗·奥斯特" },
+  { cn: "世界怎么如此刺眼？也许是我们睁开了眼睛，第一次真正看见。", en: "Why is the world so dazzling? Maybe we've opened our eyes and truly seen for the first time.", author: "劳瑞·纳恩" },
+  { cn: "时间过得很慢，像落单的一只棉鞋里的阳光，暖得让人想哭。", en: "Time passes slowly, like sunshine in a lone cotton shoe, warm enough to make one want to cry.", author: "张爱玲" },
+  { cn: "故乡的死亡并不是突然发生的，故乡每天都在死去，在我们每一次远行里。", en: "The death of hometown is not sudden; it dies a little every day, in every journey we take.", author: "格非" },
+  { cn: "我们所有人都软弱的时候，重要的是我们还会哭，在许多情况下哭是一种获救的方式。", en: "When we are all weak, what matters is that we still cry, and in many cases crying is a way of being saved.", author: "若泽·萨拉马戈" },
+  { cn: "任何疑惑都是猫一般的轻盈，悄然落地，不发出声响。", en: "Any doubt is as light as a cat, landing silently without a sound.", author: "让·鲍德里亚" },
+  { cn: "凡事如平常，更使我感到一种奇异，原来平凡才是奇迹。", en: "Everything as usual makes me feel a kind of strangeness, it turns out that ordinary is the miracle.", author: "沈从文" },
+  { cn: "时代会用两个指头夹起一个人，从他身上挤出时代所需的那一滴善恶来。", en: "The era picks up a person with two fingers and squeezes out the drop of good and evil it needs.", author: "娜杰日达·曼德施塔姆" },
+  { cn: "我们面对坍塌，身处困境，生命再次变得孤独从而显得高贵。", en: "Facing collapse and困境, life becomes lonely and thus noble again.", author: "贾樟柯" },
+  { cn: "是的，春天需要你，许多星辰指望你去探寻它们，去命名，去照亮。", en: "Yes, spring needs you, many stars expect you to explore them, to name them, to illuminate them.", author: "里尔克" },
+  { cn: "切忌傲慢，在废墟上也要保持谦卑。", en: "Avoid arrogance, remain humble even on the ruins.", author: "修昔底德" },
+  { cn: "当我们迫切期待希望的时候，诚实就显得更为重要，希望不是糖衣。", en: "When we eagerly await hope, honesty becomes more important, hope is not sugarcoating.", author: "弗吉尼亚·伍尔芙" },
+  { cn: "我看到一个新世界迅速地到来，更加科学，更有效率，但这是一个更冷酷、更无情的世界。", en: "I see a new world arriving rapidly, more scientific, more efficient, but colder and more ruthless.", author: "石黑一雄" },
+  { cn: "散会吧，让词语各自回家，让灵魂各自上路。", en: "Let's adjourn, let words go home, let souls go their own way.", author: "单向历" }
+];
+
+const bgClasses = ['bg1','bg2','bg3','bg4','bg5'];
+let idx = 0;
+
+function rand(n){ return Math.floor(Math.random()*n); }
+
+function setFontSize(cnLen){
+  const cnEl = document.getElementById('cn');
+  const btnEl = document.getElementById('cta');
+  if (cnLen > 20) {
+    cnEl.classList.add('small');
+    cnEl.classList.remove('large');
+    btnEl.style.setProperty('--btn-size', '6vw');
+  } else {
+    cnEl.classList.add('large');
+    cnEl.classList.remove('small');
+    btnEl.style.setProperty('--btn-size', '9vw');
+  }
+}
+
+function show(){
+  const p = poems[idx];
+  const cnLen = p.cn.length;
+  document.getElementById('cn').textContent = p.cn;
+  document.getElementById('en').textContent = p.en;
+  document.getElementById('au').textContent = '—— ' + p.author;
+  setFontSize(cnLen);
+  document.body.className = bgClasses[rand(bgClasses.length)];
+}
+
+function setDate(){
+  const today = new Date();
+  const dateStr = today.toLocaleDateString('zh-CN', { 
+    year: 'numeric', month: 'long', day: 'numeric' 
+  });
+  document.getElementById('date').textContent = dateStr;
+}
+
+document.getElementById('cta').onclick = ()=>{
+  idx = rand(poems.length);
+  show();
+};
+
+show();
+setDate();
+</script>
+</body>
+</html>
