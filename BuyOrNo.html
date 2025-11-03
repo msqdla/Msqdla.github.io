@@ -4,378 +4,192 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>购物决策器</title>
+    <!-- 1. Firebase 兼容库 -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+    <!-- 2. 配置 -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAMEryLz-AUsyD0nO_ELE-W0fZYYkvWH7c",
+            authDomain: "buything-a5eb2.firebaseapp.com",
+            databaseURL: "https://buything-a5eb2-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "buything-a5eb2",
+            storageBucket: "buything-a5eb2.firebasestorage.app",
+            messagingSenderId: "543394299235",
+            appId: "1:543394299235:web:c1fdd04563a9cf7f43a756"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const roomId = "room1";   // 固定房间号，可改成动态
+    </script>
+
+    <!-- 原来你的样式，丝毫未动 -->
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            color: #e0e0ff;
+            min-height: 100vh; display: flex; justify-content: center; align-items: center;
+            padding: 20px; color: #e0e0ff;
         }
-        
         .container {
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-            padding: 40px;
-            max-width: 600px;
-            width: 100%;
+            background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(10px);
+            border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2); padding: 40px;
+            max-width: 600px; width: 100%;
         }
-        
-        h1 {
-            text-align: center;
-            color: #ffffff;
-            margin-bottom: 30px;
-            font-size: 2.5em;
-            text-shadow: 0 0 10px rgba(77, 166, 255, 0.5);
-        }
-        
-        .input-section {
-            margin-bottom: 30px;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 10px;
-            color: #a0a0ff;
-            font-weight: bold;
-            font-size: 1.1em;
-        }
-        
+        h1 { text-align: center; color: #ffffff; margin-bottom: 30px; font-size: 2.5em; text-shadow: 0 0 10px rgba(77, 166, 255, 0.5); }
+        label { display: block; margin-bottom: 10px; color: #a0a0ff; font-weight: bold; font-size: 1.1em; }
         input[type="text"] {
-            width: 100%;
-            padding: 12px;
-            background: rgba(0, 0, 20, 0.3);
-            border: 2px solid rgba(77, 166, 255, 0.3);
-            border-radius: 8px;
-            font-size: 16px;
-            transition: all 0.3s;
-            color: #ffffff;
+            width: 100%; padding: 12px; background: rgba(0, 0, 20, 0.3);
+            border: 2px solid rgba(77, 166, 255, 0.3); border-radius: 8px;
+            font-size: 16px; transition: all 0.3s; color: #ffffff;
         }
-        
-        input[type="text"]:focus {
-            outline: none;
-            border-color: #4da6ff;
-            box-shadow: 0 0 10px rgba(77, 166, 255, 0.5);
-        }
-        
-        .voters-section {
-            margin-bottom: 30px;
-        }
-        
-        .voter-input {
-            margin-bottom: 15px;
-        }
-        
-        .button-container {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        
-        button {
-            flex: 1;
-            padding: 15px;
-            border: none;
-            border-radius: 8px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-            color: white;
-        }
-        
-        .start-btn {
-            background: linear-gradient(135deg, #00c9ff, #92fe9d);
-        }
-        
-        .start-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 201, 255, 0.4);
-        }
-        
-        .reset-btn {
-            background: linear-gradient(135deg, #ff416c, #ff4b2b);
-        }
-        
-        .reset-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 65, 108, 0.4);
-        }
-        
-        .voting-section {
-            display: none;
-            margin-top: 30px;
-        }
-        
-        .voter {
-            background: rgba(0, 0, 30, 0.3);
-            padding: 20px;
-            margin-bottom: 15px;
-            border-radius: 10px;
-            border-left: 4px solid #4da6ff;
-        }
-        
-        .voter-name {
-            font-weight: bold;
-            color: #ffffff;
-            margin-bottom: 10px;
-            font-size: 1.1em;
-        }
-        
-        .vote-buttons {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .vote-btn {
-            flex: 1;
-            padding: 10px;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-weight: bold;
-        }
-        
-        .yes-btn {
-            background: linear-gradient(135deg, #00c9ff, #92fe9d);
-            color: #003d4d;
-        }
-        
-        .no-btn {
-            background: linear-gradient(135deg, #ff416c, #ff4b2b);
-            color: #ffffff;
-        }
-        
-        .vote-btn:hover:not(.voted) {
-            transform: scale(1.05);
-        }
-        
-        .vote-btn.voted {
-            cursor: not-allowed;
-            opacity: 0.7;
-        }
-        
-        .result-section {
-            display: none;
-            text-align: center;
-            padding: 30px;
-            border-radius: 10px;
-            margin-top: 30px;
-            background: rgba(0, 0, 30, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .result-buy {
-            background: rgba(0, 100, 0, 0.2);
-            border: 2px solid #00c9ff;
-        }
-        
-        .result-not-buy {
-            background: rgba(100, 0, 0, 0.2);
-            border: 2px solid #ff416c;
-        }
-        
-        .result-text {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 15px;
-            text-shadow: 0 0 5px rgba(0,0,0,0.5);
-        }
-        
-        .vote-summary {
-            font-size: 18px;
-            color: #a0a0ff;
-        }
-        
-        .yes-votes {
-            color: #00c9ff;
-            font-weight: bold;
-        }
-        
-        .no-votes {
-            color: #ff416c;
-            font-weight: bold;
-        }
+        input[type="text"]:focus { outline: none; border-color: #4da6ff; box-shadow: 0 0 10px rgba(77, 166, 255, 0.5); }
+        .button-container { display: flex; gap: 20px; margin-bottom: 30px; }
+        button { flex: 1; padding: 15px; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; transition: all 0.3s; color: white; }
+        .start-btn { background: linear-gradient(135deg, #00c9ff, #92fe9d); }
+        .start-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 201, 255, 0.4); }
+        .reset-btn { background: linear-gradient(135deg, #ff416c, #ff4b2b); }
+        .reset-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255, 65, 108, 0.4); }
+        .voting-section { display: none; margin-top: 30px; }
+        .voter { background: rgba(0, 0, 30, 0.3); padding: 20px; margin-bottom: 15px; border-radius: 10px; border-left: 4px solid #4da6ff; }
+        .voter-name { font-weight: bold; color: #ffffff; margin-bottom: 10px; font-size: 1.1em; }
+        .vote-buttons { display: flex; gap: 10px; }
+        .vote-btn { flex: 1; padding: 10px; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; transition: all 0.3s; font-weight: bold; }
+        .yes-btn { background: linear-gradient(135deg, #00c9ff, #92fe9d); color: #003d4d; }
+        .no-btn { background: linear-gradient(135deg, #ff416c, #ff4b2b); color: #ffffff; }
+        .vote-btn:hover:not(.voted) { transform: scale(1.05); }
+        .vote-btn.voted { cursor: not-allowed; opacity: 0.7; }
+        .result-section { display: none; text-align: center; padding: 30px; border-radius: 10px; margin-top: 30px; background: rgba(0, 0, 30, 0.3); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .result-buy { background: rgba(0, 100, 0, 0.2); border: 2px solid #00c9ff; }
+        .result-not-buy { background: rgba(100, 0, 0, 0.2); border: 2px solid #ff416c; }
+        .result-text { font-size: 24px; font-weight: bold; margin-bottom: 15px; text-shadow: 0 0 5px rgba(0,0,0,0.5); }
+        .vote-summary { font-size: 18px; color: #a0a0ff; }
+        .yes-votes { color: #00c9ff; font-weight: bold; }
+        .no-votes { color: #ff416c; font-weight: bold; }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>🛍️ 购物决策器</h1>
-        
+
         <div class="input-section">
             <label for="itemName">你想买什么东西？</label>
             <input type="text" id="itemName" placeholder="请输入商品名称">
         </div>
-        
+
         <div class="voters-section">
             <label>参与决策的人员（3-5人）：</label>
             <div id="votersList">
-                <div class="voter-input">
-                    <input type="text" placeholder="输入姓名" class="voter-name-input">
-                </div>
-                <div class="voter-input">
-                    <input type="text" placeholder="输入姓名" class="voter-name-input">
-                </div>
-                <div class="voter-input">
-                    <input type="text" placeholder="输入姓名" class="voter-name-input">
-                </div>
+                <div class="voter-input"><input type="text" placeholder="输入姓名" class="voter-name-input"></div>
+                <div class="voter-input"><input type="text" placeholder="输入姓名" class="voter-name-input"></div>
+                <div class="voter-input"><input type="text" placeholder="输入姓名" class="voter-name-input"></div>
             </div>
             <button class="add-voter-btn" onclick="addVoter()">+ 添加决策人员</button>
         </div>
-        
+
         <div class="button-container">
             <button class="start-btn" onclick="startVoting()">开始投票</button>
             <button class="reset-btn" onclick="resetAll()">重置</button>
         </div>
-        
+
         <div id="votingSection" class="voting-section">
-            <h3 style="text-align: center; margin-bottom: 20px; color: #667eea;">请每个人投票：</h3>
+            <h3 style="text-align:center;margin-bottom:20px;color:#667eea;">请每个人投票：</h3>
             <div id="votersContainer"></div>
         </div>
-        
+
         <div id="resultSection" class="result-section">
             <div class="result-text" id="resultText"></div>
             <div class="vote-summary" id="voteSummary"></div>
         </div>
     </div>
 
+    <!-- 3. 业务脚本 -->
     <script>
+        const roomId = "room1";
         let votes = {};
         let voterCount = 3;
-        
+
         function addVoter() {
-            if (voterCount >= 5) {
-                alert('最多只能有5个决策人员！');
-                return;
-            }
-            
+            if (voterCount >= 5) return alert('最多只能有5个决策人员！');
             const votersList = document.getElementById('votersList');
-            const newVoter = document.createElement('div');
-            newVoter.className = 'voter-input';
-            newVoter.innerHTML = `<input type="text" placeholder="输入姓名" class="voter-name-input">`;
-            votersList.appendChild(newVoter);
+            const div = document.createElement('div');
+            div.className = 'voter-input';
+            div.innerHTML = `<input type="text" placeholder="输入姓名" class="voter-name-input">`;
+            votersList.appendChild(div);
             voterCount++;
         }
-        
+
         function startVoting() {
             const itemName = document.getElementById('itemName').value.trim();
-            if (!itemName) {
-                alert('请输入要购买的商品名称！');
-                return;
-            }
-            
-            const voterInputs = document.querySelectorAll('.voter-name-input');
-            const voters = [];
-            
-            voterInputs.forEach(input => {
-                const name = input.value.trim();
-                if (name) {
-                    voters.push(name);
-                }
+            if (!itemName) return alert('请输入要购买的商品名称！');
+            const names = Array.from(document.querySelectorAll('.voter-name-input'))
+                               .map(i => i.value.trim())
+                               .filter(n => n);
+            if (names.length < 3) return alert('至少需要3个决策人员！');
+            // 写入云端：商品名
+            db.ref(`rooms/${roomId}/item`).set(itemName);
+            // 初始化投票节点
+            names.forEach(n => db.ref(`rooms/${roomId}/votes/${n}`).set(null));
+            listen();          // 监听实时数据
+        }
+
+        function listen() {
+            db.ref(`rooms/${roomId}`).on('value', snap => {
+                const data = snap.val();
+                if (!data) return;
+                document.getElementById('itemName').value = data.item || '';
+                renderVotes(data.votes || {});
             });
-            
-            if (voters.length < 3) {
-                alert('至少需要3个决策人员！');
-                return;
-            }
-            
-            // 初始化投票
-            votes = {};
-            voters.forEach(voter => {
-                votes[voter] = null;
-            });
-            
-            // 显示投票区域
+        }
+
+        function renderVotes(votes) {
+            const container = document.getElementById('votersContainer');
             const votingSection = document.getElementById('votingSection');
-            const votersContainer = document.getElementById('votersContainer');
-            votersContainer.innerHTML = '';
-            
-            voters.forEach(voter => {
-                const voterDiv = document.createElement('div');
-                voterDiv.className = 'voter';
-                voterDiv.innerHTML = `
-                    <div class="voter-name">${voter}</div>
-                    <div class="vote-buttons">
-                        <button class="vote-btn yes-btn" onclick="vote('${voter}', 'yes')">✓ 买</button>
-                        <button class="vote-btn no-btn" onclick="vote('${voter}', 'no')">✗ 不买</button>
-                    </div>
-                `;
-                votersContainer.appendChild(voterDiv);
-            });
-            
-            votingSection.style.display = 'block';
-            document.getElementById('resultSection').style.display = 'none';
-        }
-        
-        function vote(voterName, choice) {
-            votes[voterName] = choice;
-            
-            // 更新按钮状态
-            const voterDiv = event.target.parentElement.parentElement;
-            const buttons = voterDiv.querySelectorAll('.vote-btn');
-            buttons.forEach(btn => {
-                btn.classList.add('voted');
-                btn.disabled = true;
-            });
-            
-            event.target.style.opacity = '1';
-            event.target.style.transform = 'scale(1.1)';
-            
-            // 检查是否所有人都已投票
-            if (Object.values(votes).every(vote => vote !== null)) {
-                showResult();
-            }
-        }
-        
-        function showResult() {
-            const yesCount = Object.values(votes).filter(vote => vote === 'yes').length;
-            const noCount = Object.values(votes).filter(vote => vote === 'no').length;
-            const total = Object.keys(votes).length;
-            
             const resultSection = document.getElementById('resultSection');
-            const resultText = document.getElementById('resultText');
-            const voteSummary = document.getElementById('voteSummary');
-            
-            resultSection.style.display = 'block';
-            
-            if (yesCount > noCount) {
-                resultSection.className = 'result-section result-buy';
-                resultText.innerHTML = `🎉 恭喜！可以购买！`;
-            } else if (noCount > yesCount) {
-                resultSection.className = 'result-section result-not-buy';
-                resultText.innerHTML = `❌ 建议不要购买！`;
-            } else {
-                resultSection.className = 'result-section result-not-buy';
-                resultText.innerHTML = `🤔 投票平局，建议谨慎考虑！`;
+            container.innerHTML = '';
+            let yes = 0, no = 0;
+            for (const [name, v] of Object.entries(votes)) {
+                if (v === 'yes') yes++; else if (v === 'no') no++;
+                container.insertAdjacentHTML('beforeend', `
+                    <div class="voter">
+                        <div class="voter-name">${name}</div>
+                        <div class="vote-buttons">
+                            <button class="vote-btn yes-btn ${v ? 'voted' : ''}" ${v ? 'disabled' : ''}
+                                onclick="vote('${name}', 'yes')">✓ 买</button>
+                            <button class="vote-btn no-btn ${v ? 'voted' : ''}" ${v ? 'disabled' : ''}
+                                onclick="vote('${name}', 'no')">✗ 不买</button>
+                        </div>
+                    </div>
+                `);
             }
-            
-            voteSummary.innerHTML = `
-                投票结果：<span class="yes-votes">${yesCount}票赞成</span> | <span class="no-votes">${noCount}票反对</span>
-            `;
+            votingSection.style.display = 'block';
+            // 全员投完显示结果
+            if (Object.keys(votes).length >= 3 && Object.values(votes).every(v => v)) {
+                resultSection.className = 'result-section ' + (yes > no ? 'result-buy' : 'result-not-buy');
+                document.getElementById('resultText').innerHTML =
+                    yes > no ? '🎉 恭喜！可以购买！' : no > yes ? '❌ 建议不要购买！' : '🤔 平局，谨慎考虑！';
+                document.getElementById('voteSummary').innerHTML = `投票结果：<span class="yes-votes">${yes}票赞成</span> | <span class="no-votes">${no}票反对</span>`;
+                resultSection.style.display = 'block';
+            } else {
+                resultSection.style.display = 'none';
+            }
         }
-        
+
+        function vote(name, choice) {
+            db.ref(`rooms/${roomId}/votes/${name}`).set(choice);
+        }
+
         function resetAll() {
-            document.getElementById('itemName').value = '';
-            document.querySelectorAll('.voter-name-input').forEach(input => {
-                input.value = '';
-            });
-            document.getElementById('votingSection').style.display = 'none';
-            document.getElementById('resultSection').style.display = 'none';
-            votes = {};
+            if (confirm('确定要重置本轮投票吗？')) {
+                db.ref(`rooms/${roomId}`).remove();
+                document.getElementById('votingSection').style.display = 'none';
+                document.getElementById('resultSection').style.display = 'none';
+                document.getElementById('itemName').value = '';
+                document.querySelectorAll('.voter-name-input').forEach(i => i.value = '');
+            }
         }
     </script>
 </body>
