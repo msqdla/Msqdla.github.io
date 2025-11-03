@@ -9,25 +9,17 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
-    <!-- Firebase 配置（把你的配置粘进来） -->
+    <!-- Firebase 配置（已填好你的） -->
     <script>
         const firebaseConfig = {
-    apiKey: "AIzaSyAMEryLz-AUsyD0nO_ELE-W0fZYYkvWH7c",
-apiKey ： "AIzaSyAMEryLz-AUsyD0nO_ELE-W0fZYYkvWH7c" ,
-    authDomain: "buything-a5eb2.firebaseapp.com",
-authDomain ： "buything-a5eb2.firebaseapp.com" ,
-    databaseURL: "https://buything-a5eb2-default-rtdb.asia-southeast1.firebasedatabase.app",
-数据库 URL ： "https://buything-a5eb2-default-rtdb.asia-southeast1.firebasedatabase.app" ,
-    projectId: "buything-a5eb2",
-projectId ： "buything-a5eb2" ，
-    storageBucket: "buything-a5eb2.firebasestorage.app",
-存储桶 ： "buything-a5eb2.firebasestorage.app" ,
-    messagingSenderId: "543394299235",
-messagingSenderId ： "543394299235" ,
-    appId: "1:543394299235:web:c1fdd04563a9cf7f43a756",
-appId ： "1:543394299235:web:c1fdd04563a9cf7f43a756" ,
-    measurementId: "G-PSH1CWCY75"
-measurementId ： “G-PSH1CWCY75”
+            apiKey: "AIzaSyAMEryLz-AUsyD0nO_ELE-W0fZYYkvWH7c",
+            authDomain: "buything-a5eb2.firebaseapp.com",
+            databaseURL: "https://buything-a5eb2-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "buything-a5eb2",
+            storageBucket: "buything-a5eb2.firebasestorage.app",
+            messagingSenderId: "543394299235",
+            appId: "1:543394299235:web:c1fdd04563a9cf7f43a756",
+            measurementId: "G-PSH1CWCY75"
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
@@ -154,9 +146,9 @@ measurementId ： “G-PSH1CWCY75”
                         <div class="voter-name">${name}：${text}</div>
                         <div class="vote-buttons">
                             <button class="vote-btn yes-btn ${voted ? 'voted' : ''}" ${voted ? 'disabled' : ''}
-                                onclick="vote('${name}', 'yes')">✓ 买</button>
+                                onclick="vote('${name}','yes')">✓ 买</button>
                             <button class="vote-btn no-btn ${voted ? 'voted' : ''}" ${voted ? 'disabled' : ''}
-                                onclick="vote('${name}', 'no')">✗ 不买</button>
+                                onclick="vote('${name}','no')">✗ 不买</button>
                         </div>
                     </div>
                 `);
@@ -177,9 +169,9 @@ measurementId ： “G-PSH1CWCY75”
             names.forEach(n => db.ref(`rooms/${roomId}/votes/${n}`).set(null));
 
             // 隐藏发起区域
-            document.querySelector('.input-section').style.display = 'none';
-            document.querySelector('.voters-section').style.display = 'none';
-            document.querySelector('.button-container').style.display = 'none';
+            document.querySelector('.input-section').style.display   = 'none';
+            document.querySelector('.voters-section').style.display  = 'none';
+            document.querySelector('.button-container').style.display= 'none';
         }
 
         // 投票
@@ -190,31 +182,28 @@ measurementId ： “G-PSH1CWCY75”
 
         // 显示结果
         function showResult(votes) {
-            const yes = Object.values(votes).filter(v => v === 'yes').length;
-            const no = Object.values(votes).filter(v => v === 'no').length;
-            const resultSection = document.getElementById('resultSection');
-            resultSection.className = 'result-section ' + (yes > no ? 'result-buy' : 'result-not-buy');
-            document.getElementById('resultText').innerHTML =
-                yes > no ? '🎉 结果：买！' : no > yes ? '❌ 结果：不买！' : '🤝 平局，再斟酌';
-            document.getElementById('voteSummary').innerHTML = `✅${yes} 票买 | ❌${no} 票不买`;
-            resultSection.style.display = 'block';
+            const yes = Object.values(votes).filter(v => v==='yes').length;
+            const no  = Object.values(votes).filter(v => v==='no').length;
+            const rs  = document.getElementById('resultSection');
+            rs.className = 'result-section ' + (yes>no ? 'result-buy' : 'result-not-buy');
+            document.getElementById('resultText').innerHTML   = yes>no ? '🎉 结果：买！' : no>yes ? '❌ 结果：不买！' : '🤝 平局，再斟酌';
+            document.getElementById('voteSummary').innerHTML  = `✅${yes} 票买 | ❌${no} 票不买`;
+            rs.style.display = 'block';
         }
 
-        // 添加输入框
+        // 加人
         function addVoter() {
             if (document.querySelectorAll('.voter-name-input').length >= 5) return alert('最多5人');
-            const div = document.createElement('div');
-            div.className = 'voter-input';
+            const div = document.createElement('div'); div.className = 'voter-input';
             div.innerHTML = `<input type="text" placeholder="输入姓名" class="voter-name-input">`;
             document.getElementById('votersList').appendChild(div);
         }
 
         // 重置
         function resetAll() {
-            if (confirm('确定要重置本轮投票吗？')) {
-                db.ref(`rooms/${roomId}`).remove();
-                location.reload();
-            }
+            if (!confirm('确定要重置本轮投票吗？')) return;
+            db.ref(`rooms/${roomId}`).remove();
+            location.reload();
         }
     </script>
 </body>
