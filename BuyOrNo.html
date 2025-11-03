@@ -4,27 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>购物决策器</title>
-    <!-- 1. Firebase 兼容库 -->
+
+    <!-- Firebase 兼容库 -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
-    <!-- 2. 配置 -->
+    <!-- Firebase 配置（把你的配置粘进来） -->
     <script>
         const firebaseConfig = {
-            apiKey: "AIzaSyAMEryLz-AUsyD0nO_ELE-W0fZYYkvWH7c",
-            authDomain: "buything-a5eb2.firebaseapp.com",
-            databaseURL: "https://buything-a5eb2-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "buything-a5eb2",
-            storageBucket: "buything-a5eb2.firebasestorage.app",
-            messagingSenderId: "543394299235",
-            appId: "1:543394299235:web:c1fdd04563a9cf7f43a756"
+    apiKey: "AIzaSyAMEryLz-AUsyD0nO_ELE-W0fZYYkvWH7c",
+apiKey ： "AIzaSyAMEryLz-AUsyD0nO_ELE-W0fZYYkvWH7c" ,
+    authDomain: "buything-a5eb2.firebaseapp.com",
+authDomain ： "buything-a5eb2.firebaseapp.com" ,
+    databaseURL: "https://buything-a5eb2-default-rtdb.asia-southeast1.firebasedatabase.app",
+数据库 URL ： "https://buything-a5eb2-default-rtdb.asia-southeast1.firebasedatabase.app" ,
+    projectId: "buything-a5eb2",
+projectId ： "buything-a5eb2" ，
+    storageBucket: "buything-a5eb2.firebasestorage.app",
+存储桶 ： "buything-a5eb2.firebasestorage.app" ,
+    messagingSenderId: "543394299235",
+messagingSenderId ： "543394299235" ,
+    appId: "1:543394299235:web:c1fdd04563a9cf7f43a756",
+appId ： "1:543394299235:web:c1fdd04563a9cf7f43a756" ,
+    measurementId: "G-PSH1CWCY75"
+measurementId ： “G-PSH1CWCY75”
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
-        const roomId = "room1";   // 固定房间号，可改成动态
+        const roomId = "room1"; // 固定房间，可改动态
     </script>
 
-    <!-- 原来你的样式，丝毫未动 -->
+    <!-- 你原来的样式，1px 不改 -->
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -75,6 +85,7 @@
     <div class="container">
         <h1>🛍️ 购物决策器</h1>
 
+        <!-- === 输入区 === -->
         <div class="input-section">
             <label for="itemName">你想买什么东西？</label>
             <input type="text" id="itemName" placeholder="请输入商品名称">
@@ -95,100 +106,114 @@
             <button class="reset-btn" onclick="resetAll()">重置</button>
         </div>
 
+        <!-- === 投票区 === -->
         <div id="votingSection" class="voting-section">
             <h3 style="text-align:center;margin-bottom:20px;color:#667eea;">请每个人投票：</h3>
             <div id="votersContainer"></div>
         </div>
 
+        <!-- === 结果区 === -->
         <div id="resultSection" class="result-section">
             <div class="result-text" id="resultText"></div>
             <div class="vote-summary" id="voteSummary"></div>
         </div>
     </div>
 
-    <!-- 3. 业务脚本 -->
+    <!-- === 业务脚本 === -->
     <script>
         const roomId = "room1";
-        let votes = {};
-        let voterCount = 3;
+        let myName = ""; // 当前用户
 
-        function addVoter() {
-            if (voterCount >= 5) return alert('最多只能有5个决策人员！');
-            const votersList = document.getElementById('votersList');
-            const div = document.createElement('div');
-            div.className = 'voter-input';
-            div.innerHTML = `<input type="text" placeholder="输入姓名" class="voter-name-input">`;
-            votersList.appendChild(div);
-            voterCount++;
-        }
+        // 进入页面就监听数据库
+        window.onload = () => listenRoom();
 
-        function startVoting() {
-            const itemName = document.getElementById('itemName').value.trim();
-            if (!itemName) return alert('请输入要购买的商品名称！');
-            const names = Array.from(document.querySelectorAll('.voter-name-input'))
-                               .map(i => i.value.trim())
-                               .filter(n => n);
-            if (names.length < 3) return alert('至少需要3个决策人员！');
-            // 写入云端：商品名
-            db.ref(`rooms/${roomId}/item`).set(itemName);
-            // 初始化投票节点
-            names.forEach(n => db.ref(`rooms/${roomId}/votes/${n}`).set(null));
-            listen();          // 监听实时数据
-        }
-
-        function listen() {
+        // 监听整个房间
+        function listenRoom() {
             db.ref(`rooms/${roomId}`).on('value', snap => {
-                const data = snap.val();
-                if (!data) return;
-                document.getElementById('itemName').value = data.item || '';
-                renderVotes(data.votes || {});
+                const data = snap.val() || {};
+                const item = data.item || "";
+                const votes = data.votes || {};
+
+                document.getElementById('itemName').value = item;
+                renderVotes(votes);
+                if (Object.keys(votes).length >= 3 && Object.values(votes).every(v => v)) {
+                    showResult(votes);
+                }
             });
         }
 
+        // 渲染投票列表
         function renderVotes(votes) {
             const container = document.getElementById('votersContainer');
-            const votingSection = document.getElementById('votingSection');
-            const resultSection = document.getElementById('resultSection');
-            container.innerHTML = '';
-            let yes = 0, no = 0;
-            for (const [name, v] of Object.entries(votes)) {
-                if (v === 'yes') yes++; else if (v === 'no') no++;
+            container.innerHTML = "";
+            for (const [name, vote] of Object.entries(votes)) {
+                const voted = vote !== null;
+                const text = vote === 'yes' ? '✅买' : vote === 'no' ? '❌不买' : '⏳未投';
                 container.insertAdjacentHTML('beforeend', `
                     <div class="voter">
-                        <div class="voter-name">${name}</div>
+                        <div class="voter-name">${name}：${text}</div>
                         <div class="vote-buttons">
-                            <button class="vote-btn yes-btn ${v ? 'voted' : ''}" ${v ? 'disabled' : ''}
+                            <button class="vote-btn yes-btn ${voted ? 'voted' : ''}" ${voted ? 'disabled' : ''}
                                 onclick="vote('${name}', 'yes')">✓ 买</button>
-                            <button class="vote-btn no-btn ${v ? 'voted' : ''}" ${v ? 'disabled' : ''}
+                            <button class="vote-btn no-btn ${voted ? 'voted' : ''}" ${voted ? 'disabled' : ''}
                                 onclick="vote('${name}', 'no')">✗ 不买</button>
                         </div>
                     </div>
                 `);
             }
-            votingSection.style.display = 'block';
-            // 全员投完显示结果
-            if (Object.keys(votes).length >= 3 && Object.values(votes).every(v => v)) {
-                resultSection.className = 'result-section ' + (yes > no ? 'result-buy' : 'result-not-buy');
-                document.getElementById('resultText').innerHTML =
-                    yes > no ? '🎉 恭喜！可以购买！' : no > yes ? '❌ 建议不要购买！' : '🤔 平局，谨慎考虑！';
-                document.getElementById('voteSummary').innerHTML = `投票结果：<span class="yes-votes">${yes}票赞成</span> | <span class="no-votes">${no}票反对</span>`;
-                resultSection.style.display = 'block';
-            } else {
-                resultSection.style.display = 'none';
-            }
+            document.getElementById('votingSection').style.display = 'block';
         }
 
+        // 发起投票（第一个人）
+        function startVoting() {
+            const itemName = document.getElementById('itemName').value.trim();
+            const names = Array.from(document.querySelectorAll('.voter-name-input'))
+                .map(i => i.value.trim()).filter(n => n);
+
+            if (!itemName) return alert('请输入商品名称');
+            if (names.length < 3) return alert('至少需要3个决策人员');
+
+            db.ref(`rooms/${roomId}/item`).set(itemName);
+            names.forEach(n => db.ref(`rooms/${roomId}/votes/${n}`).set(null));
+
+            // 隐藏发起区域
+            document.querySelector('.input-section').style.display = 'none';
+            document.querySelector('.voters-section').style.display = 'none';
+            document.querySelector('.button-container').style.display = 'none';
+        }
+
+        // 投票
         function vote(name, choice) {
+            myName = name;
             db.ref(`rooms/${roomId}/votes/${name}`).set(choice);
         }
 
+        // 显示结果
+        function showResult(votes) {
+            const yes = Object.values(votes).filter(v => v === 'yes').length;
+            const no = Object.values(votes).filter(v => v === 'no').length;
+            const resultSection = document.getElementById('resultSection');
+            resultSection.className = 'result-section ' + (yes > no ? 'result-buy' : 'result-not-buy');
+            document.getElementById('resultText').innerHTML =
+                yes > no ? '🎉 结果：买！' : no > yes ? '❌ 结果：不买！' : '🤝 平局，再斟酌';
+            document.getElementById('voteSummary').innerHTML = `✅${yes} 票买 | ❌${no} 票不买`;
+            resultSection.style.display = 'block';
+        }
+
+        // 添加输入框
+        function addVoter() {
+            if (document.querySelectorAll('.voter-name-input').length >= 5) return alert('最多5人');
+            const div = document.createElement('div');
+            div.className = 'voter-input';
+            div.innerHTML = `<input type="text" placeholder="输入姓名" class="voter-name-input">`;
+            document.getElementById('votersList').appendChild(div);
+        }
+
+        // 重置
         function resetAll() {
             if (confirm('确定要重置本轮投票吗？')) {
                 db.ref(`rooms/${roomId}`).remove();
-                document.getElementById('votingSection').style.display = 'none';
-                document.getElementById('resultSection').style.display = 'none';
-                document.getElementById('itemName').value = '';
-                document.querySelectorAll('.voter-name-input').forEach(i => i.value = '');
+                location.reload();
             }
         }
     </script>
