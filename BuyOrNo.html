@@ -1,210 +1,95 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>购物决策器</title>
+  <meta charset="UTF-8">
+  <title>购物决策器-排查版</title>
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAMEryLz-AUsyD0nO_ELE-W0fZYYkvWH7c",
+      authDomain: "buything-a5eb2.firebaseapp.com",
+      databaseURL: "https://buything-a5eb2-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "buything-a5eb2",
+      storageBucket: "buything-a5eb2.firebasestorage.app",
+      messagingSenderId: "543394299235",
+      appId: "1:543394299235:web:c1fdd04563a9cf7f43a756"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const roomId = "test1"; // 单独测试房间
+  </script>
 
-    <!-- Firebase 兼容库 -->
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-
-    <!-- Firebase 配置（已填好你的） -->
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyAMEryLz-AUsyD0nO_ELE-W0fZYYkvWH7c",
-            authDomain: "buything-a5eb2.firebaseapp.com",
-            databaseURL: "https://buything-a5eb2-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "buything-a5eb2",
-            storageBucket: "buything-a5eb2.firebasestorage.app",
-            messagingSenderId: "543394299235",
-            appId: "1:543394299235:web:c1fdd04563a9cf7f43a756",
-            measurementId: "G-PSH1CWCY75"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-        const roomId = "room1"; // 固定房间，可改动态
-    </script>
-
-    <!-- 你原来的样式，1px 不改 -->
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-            min-height: 100vh; display: flex; justify-content: center; align-items: center;
-            padding: 20px; color: #e0e0ff;
-        }
-        .container {
-            background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(10px);
-            border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2); padding: 40px;
-            max-width: 600px; width: 100%;
-        }
-        h1 { text-align: center; color: #ffffff; margin-bottom: 30px; font-size: 2.5em; text-shadow: 0 0 10px rgba(77, 166, 255, 0.5); }
-        label { display: block; margin-bottom: 10px; color: #a0a0ff; font-weight: bold; font-size: 1.1em; }
-        input[type="text"] {
-            width: 100%; padding: 12px; background: rgba(0, 0, 20, 0.3);
-            border: 2px solid rgba(77, 166, 255, 0.3); border-radius: 8px;
-            font-size: 16px; transition: all 0.3s; color: #ffffff;
-        }
-        input[type="text"]:focus { outline: none; border-color: #4da6ff; box-shadow: 0 0 10px rgba(77, 166, 255, 0.5); }
-        .button-container { display: flex; gap: 20px; margin-bottom: 30px; }
-        button { flex: 1; padding: 15px; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; transition: all 0.3s; color: white; }
-        .start-btn { background: linear-gradient(135deg, #00c9ff, #92fe9d); }
-        .start-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 201, 255, 0.4); }
-        .reset-btn { background: linear-gradient(135deg, #ff416c, #ff4b2b); }
-        .reset-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255, 65, 108, 0.4); }
-        .voting-section { display: none; margin-top: 30px; }
-        .voter { background: rgba(0, 0, 30, 0.3); padding: 20px; margin-bottom: 15px; border-radius: 10px; border-left: 4px solid #4da6ff; }
-        .voter-name { font-weight: bold; color: #ffffff; margin-bottom: 10px; font-size: 1.1em; }
-        .vote-buttons { display: flex; gap: 10px; }
-        .vote-btn { flex: 1; padding: 10px; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; transition: all 0.3s; font-weight: bold; }
-        .yes-btn { background: linear-gradient(135deg, #00c9ff, #92fe9d); color: #003d4d; }
-        .no-btn { background: linear-gradient(135deg, #ff416c, #ff4b2b); color: #ffffff; }
-        .vote-btn:hover:not(.voted) { transform: scale(1.05); }
-        .vote-btn.voted { cursor: not-allowed; opacity: 0.7; }
-        .result-section { display: none; text-align: center; padding: 30px; border-radius: 10px; margin-top: 30px; background: rgba(0, 0, 30, 0.3); border: 1px solid rgba(255, 255, 255, 0.1); }
-        .result-buy { background: rgba(0, 100, 0, 0.2); border: 2px solid #00c9ff; }
-        .result-not-buy { background: rgba(100, 0, 0, 0.2); border: 2px solid #ff416c; }
-        .result-text { font-size: 24px; font-weight: bold; margin-bottom: 15px; text-shadow: 0 0 5px rgba(0,0,0,0.5); }
-        .vote-summary { font-size: 18px; color: #a0a0ff; }
-        .yes-votes { color: #00c9ff; font-weight: bold; }
-        .no-votes { color: #ff416c; font-weight: bold; }
-    </style>
+  <style>
+    body{font-family:Arial;background:#111;color:#eee;padding:40px;text-align:center}
+    input{padding:8px 12px;margin:6px;width:220px}
+    button{padding:8px 16px;margin:6px;cursor:pointer}
+    .voter{margin:10px 0}
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🛍️ 购物决策器</h1>
+  <h2>购物决策器-排查版</h2>
 
-        <!-- === 输入区 === -->
-        <div class="input-section">
-            <label for="itemName">你想买什么东西？</label>
-            <input type="text" id="itemName" placeholder="请输入商品名称">
-        </div>
+  <!-- 1. 商品 & 姓名 -->
+  <div>
+    <label>商品：</label><input id="itemName" placeholder="想买什么"><br>
+    <label>姓名：</label><input id="myName" placeholder="你的名字"><br>
+    <button onclick="submitVote()">提交并进入投票</button>
+  </div>
 
-        <div class="voters-section">
-            <label>参与决策的人员（3-5人）：</label>
-            <div id="votersList">
-                <div class="voter-input"><input type="text" placeholder="输入姓名" class="voter-name-input"></div>
-                <div class="voter-input"><input type="text" placeholder="输入姓名" class="voter-name-input"></div>
-                <div class="voter-input"><input type="text" placeholder="输入姓名" class="voter-name-input"></div>
-            </div>
-            <button class="add-voter-btn" onclick="addVoter()">+ 添加决策人员</button>
-        </div>
+  <!-- 2. 投票区 -->
+  <h3>投票区</h3>
+  <div id="votersContainer"></div>
 
-        <div class="button-container">
-            <button class="start-btn" onclick="startVoting()">开始投票</button>
-            <button class="reset-btn" onclick="resetAll()">重置</button>
-        </div>
+  <!-- 3. 结果区 -->
+  <h3>结果</h3>
+  <div id="result"></div>
 
-        <!-- === 投票区 === -->
-        <div id="votingSection" class="voting-section">
-            <h3 style="text-align:center;margin-bottom:20px;color:#667eea;">请每个人投票：</h3>
-            <div id="votersContainer"></div>
-        </div>
+  <script>
+    /* 提交（写入云端） */
+    function submitVote() {
+      const item = document.getElementById('itemName').value.trim();
+      const name = document.getElementById('myName').value.trim();
+      if (!item || !name) { alert('商品和名字都要填'); return; }
 
-        <!-- === 结果区 === -->
-        <div id="resultSection" class="result-section">
-            <div class="result-text" id="resultText"></div>
-            <div class="vote-summary" id="voteSummary"></div>
-        </div>
-    </div>
+      // 写数据
+      db.ref(`rooms/${roomId}/item`).set(item);
+      db.ref(`rooms/${roomId}/votes/${name}`).set(null); // 未投状态
+      console.log('✅ 已写入云端');
+    }
 
-    <!-- === 业务脚本 === -->
-    <script>
-        const roomId = "room1";
-        let myName = ""; // 当前用户
+    /* 实时监听 */
+    db.ref(`rooms/${roomId}`).on('value', snap => {
+      const data = snap.val() || {};
+      console.log('🔥 收到数据', data);
+      const item = data.item || "";
+      const votes = data.votes || {};
+      renderVotes(votes);
+    });
 
-        // 进入页面就监听数据库
-        window.onload = () => listenRoom();
+    /* 渲染投票区 */
+    function renderVotes(votes) {
+      const box = document.getElementById('votersContainer');
+      box.innerHTML = "";
+      for (const [name, vote] of Object.entries(votes)) {
+        const voted = vote !== null;
+        box.insertAdjacentHTML('beforeend', `
+          <div class="voter">
+            ${name}：${voted ? (vote === 'yes' ? '✅买' : '❌不买') : '⏳未投'}
+            ${!voted ? `
+              <button onclick="vote('${name}', 'yes')">买</button>
+              <button onclick="vote('${name}', 'no')">不买</button>
+            ` : ''}
+          </div>
+        `);
+      }
+    }
 
-        // 监听整个房间
-        function listenRoom() {
-            db.ref(`rooms/${roomId}`).on('value', snap => {
-                const data = snap.val() || {};
-                const item = data.item || "";
-                const votes = data.votes || {};
-
-                document.getElementById('itemName').value = item;
-                renderVotes(votes);
-                if (Object.keys(votes).length >= 3 && Object.values(votes).every(v => v)) {
-                    showResult(votes);
-                }
-            });
-        }
-
-        // 渲染投票列表
-        function renderVotes(votes) {
-            const container = document.getElementById('votersContainer');
-            container.innerHTML = "";
-            for (const [name, vote] of Object.entries(votes)) {
-                const voted = vote !== null;
-                const text = vote === 'yes' ? '✅买' : vote === 'no' ? '❌不买' : '⏳未投';
-                container.insertAdjacentHTML('beforeend', `
-                    <div class="voter">
-                        <div class="voter-name">${name}：${text}</div>
-                        <div class="vote-buttons">
-                            <button class="vote-btn yes-btn ${voted ? 'voted' : ''}" ${voted ? 'disabled' : ''}
-                                onclick="vote('${name}','yes')">✓ 买</button>
-                            <button class="vote-btn no-btn ${voted ? 'voted' : ''}" ${voted ? 'disabled' : ''}
-                                onclick="vote('${name}','no')">✗ 不买</button>
-                        </div>
-                    </div>
-                `);
-            }
-            document.getElementById('votingSection').style.display = 'block';
-        }
-
-        // 发起投票（第一个人）
-        function startVoting() {
-            const itemName = document.getElementById('itemName').value.trim();
-            const names = Array.from(document.querySelectorAll('.voter-name-input'))
-                .map(i => i.value.trim()).filter(n => n);
-
-            if (!itemName) return alert('请输入商品名称');
-            if (names.length < 3) return alert('至少需要3个决策人员');
-
-            db.ref(`rooms/${roomId}/item`).set(itemName);
-            names.forEach(n => db.ref(`rooms/${roomId}/votes/${n}`).set(null));
-
-            // 隐藏发起区域
-            document.querySelector('.input-section').style.display   = 'none';
-            document.querySelector('.voters-section').style.display  = 'none';
-            document.querySelector('.button-container').style.display= 'none';
-        }
-
-        // 投票
-        function vote(name, choice) {
-            myName = name;
-            db.ref(`rooms/${roomId}/votes/${name}`).set(choice);
-        }
-
-        // 显示结果
-        function showResult(votes) {
-            const yes = Object.values(votes).filter(v => v==='yes').length;
-            const no  = Object.values(votes).filter(v => v==='no').length;
-            const rs  = document.getElementById('resultSection');
-            rs.className = 'result-section ' + (yes>no ? 'result-buy' : 'result-not-buy');
-            document.getElementById('resultText').innerHTML   = yes>no ? '🎉 结果：买！' : no>yes ? '❌ 结果：不买！' : '🤝 平局，再斟酌';
-            document.getElementById('voteSummary').innerHTML  = `✅${yes} 票买 | ❌${no} 票不买`;
-            rs.style.display = 'block';
-        }
-
-        // 加人
-        function addVoter() {
-            if (document.querySelectorAll('.voter-name-input').length >= 5) return alert('最多5人');
-            const div = document.createElement('div'); div.className = 'voter-input';
-            div.innerHTML = `<input type="text" placeholder="输入姓名" class="voter-name-input">`;
-            document.getElementById('votersList').appendChild(div);
-        }
-
-        // 重置
-        function resetAll() {
-            if (!confirm('确定要重置本轮投票吗？')) return;
-            db.ref(`rooms/${roomId}`).remove();
-            location.reload();
-        }
-    </script>
+    /* 投票 */
+    function vote(name, choice) {
+      db.ref(`rooms/${roomId}/votes/${name}`).set(choice);
+    }
+  </script>
 </body>
 </html>
