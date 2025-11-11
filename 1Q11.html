@@ -1,164 +1,46 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <title>NPC 数据库</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #0c0c1d, #1a1a2e);
-      color: #e0e0ff;
-      min-height: 100vh;
-      padding: 20px;
-    }
-    .container { max-width: 1200px; margin: 0 auto; }
-    .header {
-      text-align: center;
-      margin-bottom: 40px;
-      padding: 20px;
-      background: rgba(16, 18, 33, 0.6);
-      border-radius: 16px;
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(92, 107, 192, 0.2);
-      box-shadow: 0 8px 32px rgba(0, 2, 12, 0.3);
-    }
-    .header h1 {
-      color: #6df7ff;
-      font-size: 2.5rem;
-      margin-bottom: 10px;
-      text-shadow: 0 0 10px rgba(109, 247, 255, 0.5);
-    }
-    .header .status { color: #4aff9d; font-size: 1.2rem; letter-spacing: 1px; }
-    .npc-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 25px;
-      margin-bottom: 40px;
-    }
-    .npc-card {
-      background: rgba(25, 28, 50, 0.6);
-      border: 1px solid rgba(92, 107, 192, 0.3);
-      border-radius: 16px;
-      padding: 25px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 8px 32px rgba(0, 2, 12, 0.2);
-    }
-    .npc-card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 12px 40px rgba(92, 107, 192, 0.4);
-      border-color: rgba(109, 247, 255, 0.5);
-      background: rgba(30, 33, 60, 0.7);
-    }
-    .npc-name {
-      font-size: 1.6rem;
-      font-weight: bold;
-      color: #6df7ff;
-      margin-bottom: 12px;
-      text-shadow: 0 0 8px rgba(109, 247, 255, 0.3);
-    }
-    .npc-info {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 15px;
-      font-size: 0.95rem;
-    }
-    .npc-level { color: #ffd166; font-weight: bold; }
-    .npc-faction { color: #4aff9d; font-weight: bold; }
-    .npc-stats {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-      margin-top: 20px;
-    }
-    .stat-item {
-      background: rgba(16, 18, 33, 0.5);
-      padding: 12px;
-      border-radius: 8px;
-      text-align: center;
-      border: 1px solid rgba(92, 107, 192, 0.2);
-    }
-    .stat-label { font-size: 0.85rem; color: #a0a8ff; margin-bottom: 5px; letter-spacing: 0.5px; }
-    .stat-value { font-size: 1.3rem; font-weight: bold; color: #6df7ff; }
-    .detail-modal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.85);
-      z-index: 1000;
-      overflow-y: auto;
-      backdrop-filter: blur(5px);
-    }
-    .modal-content {
-      background: rgba(25, 28, 50, 0.9);
-      margin: 50px auto;
-      padding: 40px;
-      border-radius: 20px;
-      max-width: 800px;
-      position: relative;
-      border: 1px solid rgba(92, 107, 192, 0.4);
-      box-shadow: 0 20px 50px rgba(0, 2, 12, 0.5);
-      backdrop-filter: blur(16px);
-    }
-    .close-btn {
-      position: absolute;
-      top: 20px; right: 25px;
-      font-size: 2.5rem;
-      color: #a0a8ff;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-    .close-btn:hover { color: #ff6b6b; transform: scale(1.1); }
-    .detail-header { text-align: center; margin-bottom: 40px; padding-bottom: 20px; border-bottom: 1px solid rgba(92, 107, 192, 0.3); }
-    .detail-name { font-size: 2.8rem; color: #6df7ff; margin-bottom: 15px; text-shadow: 0 0 15px rgba(109, 247, 255, 0.5); }
-    .detail-info { display: flex; justify-content: center; gap: 30px; margin-bottom: 30px; flex-wrap: wrap; }
-    .detail-level, .detail-faction {
-      font-size: 1.3rem; padding: 10px 25px; border-radius: 30px; font-weight: bold;
-      background: rgba(16, 18, 33, 0.7); border: 1px solid rgba(92, 107, 192, 0.3);
-    }
-    .detail-level { color: #ffd166; }
-    .detail-faction { color: #4aff9d; }
-    .detail-section { margin-bottom: 35px; }
-    .detail-section h3 {
-      color: #6df7ff; font-size: 1.6rem; margin-bottom: 20px; padding-bottom: 10px;
-      border-bottom: 1px solid rgba(92, 107, 192, 0.3);
-    }
-    .detail-section p { line-height: 1.8; color: #e0e0ff; font-size: 1.1rem; }
-    .detail-stats {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-      margin-top: 30px;
-    }
-    .detail-stat-item {
-      background: rgba(16, 18, 33, 0.7);
-      padding: 25px 15px;
-      border-radius: 12px;
-      text-align: center;
-      border: 1px solid rgba(92, 107, 192, 0.3);
-      transition: all 0.3s ease;
-    }
-    .detail-stat-item:hover {
-      transform: translateY(-5px);
-      background: rgba(30, 33, 60, 0.8);
-      box-shadow: 0 8px 20px rgba(92, 107, 192, 0.3);
-    }
-    .detail-stat-label { font-size: 1rem; color: #a0a8ff; margin-bottom: 10px; letter-spacing: 0.5px; }
-    .detail-stat-value { font-size: 2rem; font-weight: bold; color: #6df7ff; }
-
-    @media (max-width: 768px) {
-      .header h1 { font-size: 2rem; }
-      .npc-grid { grid-template-columns: 1fr; }
-      .modal-content { margin: 20px; padding: 25px; }
-      .detail-name { font-size: 2.2rem; }
-      .detail-stats { grid-template-columns: 1fr; }
-      .detail-info { gap: 15px; }
-      .detail-level, .detail-faction { font-size: 1.1rem; padding: 8px 20px; }
-    }
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-gradient(135deg,#0c0c1d,#1a1a2e);color:#e0e0ff;min-height:100vh;padding:20px}
+    .container{max-width:1200px;margin:0 auto}
+    .header{text-align:center;margin-bottom:40px;padding:20px;background:rgba(16,18,33,.6);border-radius:16px;backdrop-filter:blur(10px);border:1px solid rgba(92,107,192,.2);box-shadow:0 8px 32px rgba(0,2,12,.3)}
+    .header h1{color:#6df7ff;font-size:2.5rem;margin-bottom:10px;text-shadow:0 0 10px rgba(109,247,255,.5)}
+    .header .status{color:#4aff9d;font-size:1.2rem;letter-spacing:1px}
+    .npc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:25px;margin-bottom:40px}
+    .npc-card{background:rgba(25,28,50,.6);border:1px solid rgba(92,107,192,.3);border-radius:16px;padding:20px;cursor:pointer;transition:all .3s ease;backdrop-filter:blur(10px);box-shadow:0 8px 32px rgba(0,2,12,.2)}
+    .npc-card:hover{transform:translateY(-8px);box-shadow:0 12px 40px rgba(92,107,192,.4);border-color:rgba(109,247,255,.5);background:rgba(30,33,60,.7)}
+    .card-thumb{width:100%;height:200px;object-fit:cover;border-radius:12px;margin-bottom:15px}
+    .npc-name{font-size:1.6rem;font-weight:bold;color:#6df7ff;margin-bottom:12px;text-shadow:0 0 8px rgba(109,247,255,.3)}
+    .npc-info{display:flex;justify-content:space-between;margin-bottom:15px;font-size:.95rem}
+    .npc-level{color:#ffd166;font-weight:bold}
+    .npc-faction{color:#4aff9d;font-weight:bold}
+    .npc-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:20px}
+    .stat-item{background:rgba(16,18,33,.5);padding:12px;border-radius:8px;text-align:center;border:1px solid rgba(92,107,192,.2)}
+    .stat-label{font-size:.85rem;color:#a0a8ff;margin-bottom:5px;letter-spacing:.5px}
+    .stat-value{font-size:1.3rem;font-weight:bold;color:#6df7ff}
+    .detail-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.85);z-index:1000;overflow-y:auto;backdrop-filter:blur(5px)}
+    .modal-content{background:rgba(25,28,50,.9);margin:50px auto;padding:40px;border-radius:20px;max-width:800px;position:relative;border:1px solid rgba(92,107,192,.4);box-shadow:0 20px 50px rgba(0,2,12,.5);backdrop-filter:blur(16px)}
+    .close-btn{position:absolute;top:20px;right:25px;font-size:2.5rem;color:#a0a8ff;cursor:pointer;transition:all .3s ease}
+    .close-btn:hover{color:#ff6b6b;transform:scale(1.1)}
+    .detail-header{text-align:center;margin-bottom:40px;padding-bottom:20px;border-bottom:1px solid rgba(92,107,192,.3)}
+    .detail-thumb{width:100%;height:400px;object-fit:cover;border-radius:12px;margin-bottom:20px}
+    .detail-name{font-size:2.8rem;color:#6df7ff;margin-bottom:15px;text-shadow:0 0 15px rgba(109,247,255,.5)}
+    .detail-info{display:flex;justify-content:center;gap:30px;margin-bottom:30px;flex-wrap:wrap}
+    .detail-level,.detail-faction{font-size:1.3rem;padding:10px 25px;border-radius:30px;font-weight:bold;background:rgba(16,18,33,.7);border:1px solid rgba(92,107,192,.3)}
+    .detail-level{color:#ffd166}.detail-faction{color:#4aff9d}
+    .detail-section{margin-bottom:35px}.detail-section h3{color:#6df7ff;font-size:1.6rem;margin-bottom:20px;padding-bottom:10px;border-bottom:1px solid rgba(92,107,192,.3)}
+    .detail-section p{line-height:1.8;color:#e0e0ff;font-size:1.1rem}
+    .detail-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:30px}
+    .detail-stat-item{background:rgba(16,18,33,.7);padding:25px 15px;border-radius:12px;text-align:center;border:1px solid rgba(92,107,192,.3);transition:all .3s ease}
+    .detail-stat-item:hover{transform:translateY(-5px);background:rgba(30,33,60,.8);box-shadow:0 8px 20px rgba(92,107,192,.3)}
+    .detail-stat-label{font-size:1rem;color:#a0a8ff;margin-bottom:10px;letter-spacing:.5px}
+    .detail-stat-value{font-size:2rem;font-weight:bold;color:#6df7ff}
+    @media (max-width:768px){.header h1{font-size:2rem}.npc-grid{grid-template-columns:1fr}.modal-content{margin:20px;padding:25px}.detail-name{font-size:2.2rem}.detail-stats{grid-template-columns:1fr}.detail-info{gap:15px}.detail-level,.detail-faction{font-size:1.1rem;padding:8px 20px}}
   </style>
 </head>
 <body>
@@ -174,6 +56,7 @@
     <div class="modal-content">
       <span class="close-btn" onclick="closeModal()">&times;</span>
       <div class="detail-header">
+        <img id="detailThumb" class="detail-thumb" src="" alt="NPC头图">
         <div class="detail-name" id="detailName"></div>
         <div class="detail-info">
           <div class="detail-level" id="detailLevel"></div>
@@ -201,37 +84,49 @@
         name: "NEON VIPER", level: "LVL 38", class: "ASSASSIN", faction: "Red Syndicate", threat: "HIGH", com: 65, int: 92,
         bio: "A skilled operative with years of experience in the field. Known for their strategic thinking and ability to adapt to any situation. Has earned a reputation among the elite circles of the city.",
         background: "Originally from the outer districts, they climbed through the ranks using combination of technical expertise and street smarts.",
-        stats: { "COMBAT": 65, "INTELLIGENCE": 92, "CHARISMA": 88 }
+        stats: { "COMBAT": 65, "INTELLIGENCE": 92, "CHARISMA": 88 },
+        thumb: "https://via.placeholder.com/300x200/ff00ff/ffffff?text=NEON+VIPER",
+        hero: "https://via.placeholder.com/800x400/ff00ff/ffffff?text=NEON+VIPER"
       },
       {
         name: "CIRCUIT BREAKER", level: "LVL 35", class: "ENGINEER", faction: "Tech Guild", threat: "MEDIUM", com: 50, int: 85,
         bio: "A master of technology and innovation, specializing in cybernetic enhancements and digital warfare.",
         background: "Born in the tech district, showed exceptional aptitude for machines and programming from an early age.",
-        stats: { "COMBAT": 50, "INTELLIGENCE": 85, "CHARISMA": 70 }
+        stats: { "COMBAT": 50, "INTELLIGENCE": 85, "CHARISMA": 70 },
+        thumb: "https://via.placeholder.com/300x200/00ff99/000000?text=CIRCUIT+BREAKER",
+        hero: "https://via.placeholder.com/800x400/00ff99/000000?text=CIRCUIT+BREAKER"
       },
       {
         name: "GHOST PROTOCOL", level: "LVL 45", class: "SPY", faction: "Shadow Corps", threat: "HIGH", com: 70, int: 88,
         bio: "An elite infiltrator known for completing impossible missions without leaving a trace.",
         background: "Trained in the shadows, identity unknown even to their own organization.",
-        stats: { "COMBAT": 70, "INTELLIGENCE": 88, "CHARISMA": 82 }
+        stats: { "COMBAT": 70, "INTELLIGENCE": 88, "CHARISMA": 82 },
+        thumb: "https://via.placeholder.com/300x200/444444/ffffff?text=GHOST+PROTOCOL",
+        hero: "https://via.placeholder.com/800x400/444444/ffffff?text=GHOST+PROTOCOL"
       },
       {
         name: "CHROME MERCHANT", level: "LVL 38", class: "TRADER", faction: "Free Market", threat: "MEDIUM", com: 55, int: 70,
         bio: "A shrewd businessman dealing in high-tech modifications and black market goods.",
         background: "Built their empire from nothing, known for fair deals and deadly negotiations.",
-        stats: { "COMBAT": 55, "INTELLIGENCE": 70, "CHARISMA": 85 }
+        stats: { "COMBAT": 55, "INTELLIGENCE": 70, "CHARISMA": 85 },
+        thumb: "https://via.placeholder.com/300x200/ffcc00/000000?text=CHROME+MERCHANT",
+        hero: "https://via.placeholder.com/800x400/ffcc00/000000?text=CHROME+MERCHANT"
       },
       {
         name: "IRON FIST", level: "LVL 40", class: "ENFORCER", faction: "Steel Cartel", threat: "HIGH", com: 85, int: 65,
         bio: "A legendary enforcer known for crushing opposition with brutal efficiency.",
         background: "Rose through the ranks with raw power and unwavering loyalty to the cartel.",
-        stats: { "COMBAT": 85, "INTELLIGENCE": 65, "CHARISMA": 75 }
+        stats: { "COMBAT": 85, "INTELLIGENCE": 65, "CHARISMA": 75 },
+        thumb: "https://via.placeholder.com/300x200/ff3300/ffffff?text=IRON+FIST",
+        hero: "https://via.placeholder.com/800x400/ff3300/ffffff?text=IRON+FIST"
       },
       {
         name: "RAVEN SHADOW", level: "LVL 42", class: "HACKER", faction: "NetRunners", threat: "HIGH", com: 60, int: 95,
         bio: "A ghost in the machine, capable of breaching any security system known to man.",
         background: "Mysterious figure operating from the digital realm, real identity unknown.",
-        stats: { "COMBAT": 60, "INTELLIGENCE": 95, "CHARISMA": 70 }
+        stats: { "COMBAT": 60, "INTELLIGENCE": 95, "CHARISMA": 70 },
+        thumb: "https://via.placeholder.com/300x200/6600ff/ffffff?text=RAVEN+SHADOW",
+        hero: "https://via.placeholder.com/800x400/6600ff/ffffff?text=RAVEN+SHADOW"
       }
     ];
 
@@ -242,6 +137,7 @@
         card.className = 'npc-card';
         card.onclick = () => showDetail(npc);
         card.innerHTML = `
+          <img class="card-thumb" src="${npc.thumb}" alt="${npc.name}">
           <div class="npc-name">${npc.name}</div>
           <div class="npc-info">
             <span class="npc-level">${npc.class} ${npc.level}</span>
@@ -263,6 +159,7 @@
     }
 
     function showDetail(npc) {
+      document.getElementById('detailThumb').src = npc.hero;
       document.getElementById('detailName').textContent = npc.name;
       document.getElementById('detailLevel').textContent = `${npc.class} ${npc.level}`;
       document.getElementById('detailFaction').textContent = npc.faction;
