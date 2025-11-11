@@ -40,6 +40,8 @@
     .detail-stat-item:hover{transform:translateY(-5px);background:rgba(30,33,60,.8);box-shadow:0 8px 20px rgba(92,107,192,.3)}
     .detail-stat-label{font-size:1rem;color:#a0a8ff;margin-bottom:10px;letter-spacing:.5px}
     .detail-stat-value{font-size:2rem;font-weight:bold;color:#6df7ff}
+    /* 链接样式 */
+    .detail-stat-item a{display:block;width:100%;height:100%;color:inherit;text-decoration:none;border-radius:inherit}
     @media (max-width:768px){.header h1{font-size:2rem}.npc-grid{grid-template-columns:1fr}.modal-content{margin:20px;padding:25px}.detail-name{font-size:2.2rem}.detail-stats{grid-template-columns:1fr}.detail-info{gap:15px}.detail-level,.detail-faction{font-size:1.1rem;padding:8px 20px}}
   </style>
 </head>
@@ -81,8 +83,8 @@
   <script>
     const npcData = [
       {
-        name: "Alex Hormozi", level: "LVL 38", class: "ASSASSIN", faction: "Red Syndicate", threat: "HIGH", com: 65, int: 92,
-        bio: "GUIDING PRINCIPLES:There are no rules.",
+        name: "NEON VIPER", level: "LVL 38", class: "ASSASSIN", faction: "Red Syndicate", threat: "HIGH", com: 65, int: 92,
+        bio: "A skilled operative with years of experience in the field. Known for their strategic thinking and ability to adapt to any situation. Has earned a reputation among the elite circles of the city.",
         background: "Originally from the outer districts, they climbed through the ranks using combination of technical expertise and street smarts.",
         stats: { "COMBAT": 65, "INTELLIGENCE": 92, "CHARISMA": 88 },
         thumb: "https://via.placeholder.com/300x200/ff00ff/ffffff?text=NEON+VIPER",
@@ -171,9 +173,12 @@
       for (const [key, value] of Object.entries(npc.stats)) {
         const statItem = document.createElement('div');
         statItem.className = 'detail-stat-item';
+        // ① 链接占位：替换 # 为你真实地址
         statItem.innerHTML = `
-          <div class="detail-stat-label">${key}</div>
-          <div class="detail-stat-value">${value}</div>
+          <a href="https://www.notion.so/laoda/Is-Being-a-Digital-Nomad-Worth-It-2a8b8eb5423d8038a0d4c02f5e00f962?source=copy_link" onclick="event.stopPropagation()">
+            <div class="detail-stat-label">${key}</div>
+            <div class="detail-stat-value">${value}</div>
+          </a>
         `;
         statsContainer.appendChild(statItem);
       }
