@@ -1,31 +1,143 @@
-﻿<!DOCTYPE html>
-<html lang="zh-CN">
+<!DOCTYPE html>
+<html lang="zh">
 <head>
-<meta charset="UTF-8">
-<title>msqclla 的主页</title>
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<style>
-body{margin:0;padding:40px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif;
-     background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;min-height:100vh;display:flex;align-items:center;justify-content:center}
-.box{background:rgba(255,255,255,.15);border-radius:12px;padding:40px 60px;backdrop-filter:blur(10px);text-align:center}
-h1{margin:0 0 20px;font-size:28px;font-weight:500}
-.links{margin-top:25px}
-.links a{display:inline-block;margin:8px 12px;padding:10px 22px;background:#fff;color:#764ba2;border-radius:30px;text-decoration:none;font-weight:600;transition:.3s}
-.links a:hover{background:#f1f1f1;transform:translateY(-2px)}
-footer{margin-top:30px;font-size:14px;opacity:.8}
-</style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>你的名字 - 作品集</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; line-height: 1.6; color: #333; padding: 20px; }
+        header { margin-bottom: 30px; }
+        header h1 { font-size: 2.5rem; font-weight: 500; }
+        header p { margin: 10px 0; color: #666; }
+        nav a { margin-left: 20px; text-decoration: none; color: #0070c9; }
+        .projects { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .project-card { border: 1px solid #ddd; border-radius: 8px; overflow: hidden; cursor: pointer; }
+        .project-card img { width: 100%; height: 180px; object-fit: cover; }
+        .project-card h3 { padding: 15px; font-size: 1.1rem; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); justify-content: center; align-items: center; z-index: 1000; }
+        .modal img { max-width: 90vw; max-height: 90vh; object-fit: contain; }
+        footer { margin-top: 50px; padding: 20px 0; background: #e8f5e8; width: 100%; left: 0; }
+        footer ul { display: flex; flex-wrap: wrap; list-style: none; justify-content: center; }
+        footer li { margin: 5px 20px; }
+    </style>
 </head>
 <body>
-<div class="box">
-  <h1>👋 欢迎来到 msqclla 的主页</h1>
-  <p>下面是我随手放的两个页面，点卡片即可查看。</p>
 
-  <div class="links">
-    <a href="README.html">README 页面</a>
-    <a href="1Q11.html">1Q11 页面</a>
-  </div>
+    <header>
+        <h1>你的名字</h1>
+        <p>产品设计师</p>
+        <p>用心设计有目的、有细节的产品。欢迎联系合作。</p>
+        <nav>
+            <a href="#about">关于</a>
+            <a href="#works">作品</a>
+            <a href="#contact">联系</a>
+        </nav>
+    </header>
 
-  <footer>Powered by GitHub Pages</footer>
-</div>
+    <main>
+        <section id="works">
+            <h2>精选项目</h2>
+            <div class="projects" id="project-list"></div>
+        </section>
+    </main>
+
+    <div id="image-modal" class="modal">
+        <image id="modal-img" src="" alt="项目大图">
+    </div>
+
+    <footer>
+        <ul>
+            <li>9+ 年设计经验</li>
+            <li>远程像素打磨师</li>
+            <li>坐标：上海</li>
+            <li>随时可开始新项目</li>
+        </ul>
+    </footer>
+
+    <script>
+        // === 你的项目数据，直接在这里替换 ===
+        const projects = [
+            {
+                title: "StartGlobal",
+                desc: "全球化启动平台设计",
+                thumb: "https://via.placeholder.com/300x180?text=StartGlobal",
+                full: "https://via.placeholder.com/800x600?text=StartGlobal+完整示例"
+            },
+            {
+                title: "Payper",
+                desc: "移动支付应用界面",
+                thumb: "https://via.placeholder.com/300x180?text=Payper",
+                full: "https://via.placeholder.com/800x600?text=Payper+完整示例"
+            },
+            {
+                title: "Vipline",
+                desc: "企业级通信工具",
+                thumb: "https://via.placeholder.com/300x180?text=Vipline",
+                full: "https://via.placeholder.com/800x600?text=Vipline+完整示例"
+            },
+            {
+                title: "Matafy",
+                desc: "数据分析仪表盘",
+                thumb: "https://via.placeholder.com/300x180?text=Matafy",
+                full: "https://via.placeholder.com/800x600?text=Matafy+完整示例"
+            },
+            {
+                title: "Fleetsu",
+                desc: "物流车队管理系统",
+                thumb: "https://via.placeholder.com/300x180?text=Fleetsu",
+                full: "https://via.placeholder.com/800x600?text=Fleetsu+完整示例"
+            },
+            {
+                title: "新项目 1",
+                desc: "项目 1 的简短描述",
+                thumb: "https://via.placeholder.com/300x180?text=新项目1",
+                full: "https://via.placeholder.com/800x600?text=新项目1+完整示例"
+            },
+            {
+                title: "新项目 2",
+                desc: "项目 2 的简短描述",
+                thumb: "https://via.placeholder.com/300x180?text=新项目2",
+                full: "https://via.placeholder.com/800x600?text=新项目2+完整示例"
+            }
+        ];
+
+        // 渲染项目列表
+        function renderProjects() {
+            const container = document.getElementById('project-list');
+            container.innerHTML = '';
+            projects.forEach((project, index) => {
+                const card = document.createElement('div');
+                card.className = 'project-card';
+                card.innerHTML = `
+                    <image src="${project.thumb}" alt="${project.title}">
+                    <h3>${project.title}</h3>
+                    <p>${project.desc}</p>
+                `;
+                card.onclick = (e) => {
+                    e.stopPropagation();
+                    openModal(project.full);
+                };
+                container.appendChild(card);
+            });
+        }
+
+        // 打开模态框显示大图
+        function openModal(imgSrc) {
+            document.getElementById('modal-img').src = imgSrc;
+            document.getElementById('image-modal').style.display = 'flex';
+        }
+
+        // 关闭模态框
+        function closeModal() {
+            document.getElementById('image-modal').style.display = 'none';
+        }
+
+        // 点击任意位置关闭大图
+        document.getElementById('image-modal').onclick = closeModal;
+
+        // 页面加载完成后渲染项目
+        window.onload = renderProjects;
+    </script>
 </body>
 </html>
