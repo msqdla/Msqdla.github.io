@@ -14,9 +14,49 @@
         .projects { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
         .project-card { border: 1px solid #ddd; border-radius: 8px; overflow: hidden; cursor: pointer; }
         .project-card img { width: 100%; height: 180px; object-fit: cover; }
-        .project-card h3 { padding: 15px; font-size: 1.1rem; }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); justify-content: center; align-items: center; z-index: 1000; }
-        .modal img { max-width: 90vw; max-height: 90vh; object-fit: contain; }
+        .project-card h3 { padding: 15px 15px 5px; font-size: 1.1rem; }
+        .project-card p { padding: 0 15px 15px; font-size: 0.95rem; color: #666; }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 600px;
+            width: 90%;
+            text-align: center;
+            position: relative;
+        }
+        .modal h2 { margin-bottom: 15px; }
+        .modal p { margin-bottom: 20px; color: #444; }
+        .modal a {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #0070c9;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+        .modal a:hover { background: #005a9e; }
+        .close-btn {
+            position: absolute;
+            top: 10px; right: 15px;
+            font-size: 24px;
+            color: #999;
+            cursor: pointer;
+        }
+
         footer { margin-top: 50px; padding: 20px 0; background: #e8f5e8; width: 100%; left: 0; }
         footer ul { display: flex; flex-wrap: wrap; list-style: none; justify-content: center; }
         footer li { margin: 5px 20px; }
@@ -42,8 +82,14 @@
         </section>
     </main>
 
-    <div id="image-modal" class="modal">
-        <image id="modal-img" src="" alt="项目大图">
+    <!-- 修改后的模态框 -->
+    <div id="project-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <h2 id="modal-title">项目标题</h2>
+            <p id="modal-desc">项目描述</p>
+            <a id="modal-link" href="#" target="_blank">访问项目</a>
+        </div>
     </div>
 
     <footer>
@@ -56,87 +102,88 @@
     </footer>
 
     <script>
-        // === 你的项目数据，直接在这里替换 ===
         const projects = [
             {
                 title: "StartGlobal",
                 desc: "和小莱莱一起学《疯狂动物城》",
-                thumb: "http://laoda.bond/LaiLai-English/",
+                thumb: "http://laoda.bond/LaiLai-English/screenshot.png", // 建议用一张截图作为缩略图
                 full: "http://laoda.bond/LaiLai-English/"
             },
             {
                 title: "Payper",
                 desc: "移动支付应用界面",
                 thumb: "https://via.placeholder.com/300x180?text=Payper",
-                full: "https://via.placeholder.com/800x600?text=Payper+完整示例"
+                full: "https://example.com/payper"
             },
+            // 其他项目保持不变...
             {
                 title: "Vipline",
                 desc: "企业级通信工具",
                 thumb: "https://via.placeholder.com/300x180?text=Vipline",
-                full: "https://via.placeholder.com/800x600?text=Vipline+完整示例"
+                full: "https://example.com/vipline"
             },
             {
                 title: "Matafy",
                 desc: "数据分析仪表盘",
                 thumb: "https://via.placeholder.com/300x180?text=Matafy",
-                full: "https://via.placeholder.com/800x600?text=Matafy+完整示例"
+                full: "https://example.com/matafy"
             },
             {
                 title: "Fleetsu",
                 desc: "物流车队管理系统",
                 thumb: "https://via.placeholder.com/300x180?text=Fleetsu",
-                full: "https://via.placeholder.com/800x600?text=Fleetsu+完整示例"
+                full: "https://example.com/fleetsu"
             },
             {
                 title: "新项目 1",
                 desc: "项目 1 的简短描述",
                 thumb: "https://via.placeholder.com/300x180?text=新项目1",
-                full: "https://via.placeholder.com/800x600?text=新项目1+完整示例"
+                full: "https://example.com/new1"
             },
             {
                 title: "新项目 2",
                 desc: "项目 2 的简短描述",
                 thumb: "https://via.placeholder.com/300x180?text=新项目2",
-                full: "https://via.placeholder.com/800x600?text=新项目2+完整示例"
+                full: "https://example.com/new2"
             }
         ];
 
-        // 渲染项目列表
         function renderProjects() {
             const container = document.getElementById('project-list');
             container.innerHTML = '';
-            projects.forEach((project, index) => {
+            projects.forEach(project => {
                 const card = document.createElement('div');
                 card.className = 'project-card';
+                // 使用 img 标签（不是 image）
                 card.innerHTML = `
-                    <image src="${project.thumb}" alt="${project.title}">
+                    <img src="${project.thumb}" alt="${project.title}">
                     <h3>${project.title}</h3>
                     <p>${project.desc}</p>
                 `;
-                card.onclick = (e) => {
-                    e.stopPropagation();
-                    openModal(project.full);
-                };
+                card.onclick = () => openModal(project);
                 container.appendChild(card);
             });
         }
 
-        // 打开模态框显示大图
-        function openModal(imgSrc) {
-            document.getElementById('modal-img').src = imgSrc;
-            document.getElementById('image-modal').style.display = 'flex';
+        function openModal(project) {
+            document.getElementById('modal-title').textContent = project.title;
+            document.getElementById('modal-desc').textContent = project.desc;
+            const linkEl = document.getElementById('modal-link');
+            linkEl.href = project.full;
+            document.getElementById('project-modal').style.display = 'flex';
         }
 
-        // 关闭模态框
         function closeModal() {
-            document.getElementById('image-modal').style.display = 'none';
+            document.getElementById('project-modal').style.display = 'none';
         }
 
-        // 点击任意位置关闭大图
-        document.getElementById('image-modal').onclick = closeModal;
+        // 点击 modal 背景关闭
+        document.getElementById('project-modal').onclick = (e) => {
+            if (e.target === document.getElementById('project-modal')) {
+                closeModal();
+            }
+        };
 
-        // 页面加载完成后渲染项目
         window.onload = renderProjects;
     </script>
 </body>
