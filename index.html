@@ -13,7 +13,7 @@
         nav a { margin-left: 20px; text-decoration: none; color: #0070c9; }
         .projects { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
         .project-card { border: 1px solid #ddd; border-radius: 8px; overflow: hidden; cursor: pointer; }
-        .project-card img { width: 100%; height: 180px; object-fit: cover; }
+        .project-card img { width: 100%; height: auto; object-fit: cover; } /* 修改为自适应 */
         .project-card h3 { padding: 15px 15px 5px; font-size: 1.1rem; }
         .project-card p { padding: 0 15px 15px; font-size: 0.95rem; color: #666; }
 
@@ -65,7 +65,7 @@
 <body>
 
     <header>
-        <h1>你的名字</h1>
+        <h1>老达 LAODA</h1>
         <p>产品设计师</p>
         <p>用心设计有目的、有细节的产品。欢迎联系合作。</p>
         <nav>
@@ -104,33 +104,32 @@
     <script>
         const projects = [
             {
-                title: "StartGlobal",
+                title: "和小莱莱一起学",
                 desc: "和小莱莱一起学《疯狂动物城》",
-                thumb: "https://lailai-english.oss-cn-beijing.aliyuncs.com/LAILAIHome01.jpg", // 建议用一张截图作为缩略图
+                thumb: "https://lailai-english.oss-cn-beijing.aliyuncs.com/LAILAIHome01.jpg",
                 full: "http://laoda.bond/LaiLai-English/"
             },
             {
-                title: "Payper",
-                desc: "打印单词正反卡",
+                title: "单词正反闪卡",
+                desc: "打印单词正反闪卡",
                 thumb: "https://lailai-english.oss-cn-beijing.aliyuncs.com/LaiLaiEnglishWordA.jpg",
                 full: "https://example.com/payper"
             },
-            // 其他项目保持不变...
             {
-                title: "Vipline",
-                desc: "企业级通信工具",
+                title: "一天一句诗",
+                desc: "一天一句诗",
                 thumb: "https://via.placeholder.com/300x180?text=Vipline",
                 full: "https://example.com/vipline"
             },
             {
-                title: "Matafy",
-                desc: "数据分析仪表盘",
+                title: "搜歌词",
+                desc: "1000 首歌词",
                 thumb: "https://via.placeholder.com/300x180?text=Matafy",
                 full: "https://example.com/matafy"
             },
             {
-                title: "Fleetsu",
-                desc: "物流车队管理系统",
+                title: "王教练成绩记录",
+                desc: "（多人）记录",
                 thumb: "https://via.placeholder.com/300x180?text=Fleetsu",
                 full: "https://example.com/fleetsu"
             },
@@ -154,7 +153,6 @@
             projects.forEach(project => {
                 const card = document.createElement('div');
                 card.className = 'project-card';
-                // 使用 img 标签（不是 image）
                 card.innerHTML = `
                     <img src="${project.thumb}" alt="${project.title}">
                     <h3>${project.title}</h3>
@@ -177,7 +175,6 @@
             document.getElementById('project-modal').style.display = 'none';
         }
 
-        // 点击 modal 背景关闭
         document.getElementById('project-modal').onclick = (e) => {
             if (e.target === document.getElementById('project-modal')) {
                 closeModal();
