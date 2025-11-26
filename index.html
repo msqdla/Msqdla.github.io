@@ -6,16 +6,91 @@
     <title>老达 LaoDa - 作品集</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; line-height: 1.6; color: #333; padding: 20px; }
-        header { margin-bottom: 30px; }
-        header h1 { font-size: 2.5rem; font-weight: 500; }
-        header p { margin: 10px 0; color: #666; }
-        nav a { margin-left: 20px; text-decoration: none; color: #0070c9; }
-        .projects { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-        .project-card { border: 1px solid #ddd; border-radius: 8px; overflow: hidden; cursor: pointer; }
-        .project-card img { width: 100%; height: auto; object-fit: cover; } /* 修改为自适应 */
-        .project-card h3 { padding: 15px 15px 5px; font-size: 1.1rem; }
-        .project-card p { padding: 0 15px 15px; font-size: 0.95rem; color: #666; }
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #fff;
+            padding: 20px;
+        }
+        header {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 500;
+            color: #000;
+        }
+        header p {
+            margin: 10px 0;
+            color: #666;
+        }
+        nav a {
+            margin-left: 20px;
+            text-decoration: none;
+            color: #0070c9;
+        }
+
+        .projects {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .project-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .project-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+        }
+
+        /* ✅ 只保持宽度，高度自由，完整显示图片 */
+        .project-card img {
+            width: 100%;
+            height: auto;      /* 关键：保持原始比例 */
+            display: block;
+            /* 不设 aspect-ratio，不设 object-fit */
+        }
+
+        /* 标题区域配色 */
+        .project-card h3 {
+            padding: 15px 15px 5px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-align: center;
+            margin: 0;
+        }
+
+        /* 配色分类 */
+        .type-programme,
+        .type-insoleuse {
+            background-color: #E53935;
+            color: white;
+        }
+        .type-artists,
+        .type-workshops {
+            background-color: #2196F3;
+            color: white;
+        }
+        .type-expositions,
+        .type-visites {
+            background-color: #FFEB3B;
+            color: #333;
+        }
+
+        .project-card p {
+            padding: 0 15px 15px;
+            font-size: 0.95rem;
+            color: #666;
+            text-align: center;
+        }
 
         /* Modal */
         .modal {
@@ -37,8 +112,14 @@
             text-align: center;
             position: relative;
         }
-        .modal h2 { margin-bottom: 15px; }
-        .modal p { margin-bottom: 20px; color: #444; }
+        .modal h2 {
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+        }
+        .modal p {
+            margin-bottom: 20px;
+            color: #444;
+        }
         .modal a {
             display: inline-block;
             padding: 10px 20px;
@@ -48,7 +129,9 @@
             border-radius: 6px;
             font-weight: 500;
         }
-        .modal a:hover { background: #005a9e; }
+        .modal a:hover {
+            background: #005a9e;
+        }
         .close-btn {
             position: absolute;
             top: 10px; right: 15px;
@@ -56,16 +139,33 @@
             color: #999;
             cursor: pointer;
         }
+        .close-btn:hover {
+            color: #333;
+        }
 
-        footer { margin-top: 50px; padding: 20px 0; background: #e8f5e8; width: 100%; left: 0; }
-        footer ul { display: flex; flex-wrap: wrap; list-style: none; justify-content: center; }
-        footer li { margin: 5px 20px; }
+        footer {
+            margin-top: 50px;
+            padding: 20px 0;
+            background: #e8f5e8;
+            width: 100%;
+            text-align: center;
+        }
+        footer ul {
+            display: flex;
+            flex-wrap: wrap;
+            list-style: none;
+            justify-content: center;
+            gap: 15px;
+        }
+        footer li {
+            margin: 5px;
+        }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>老达 LAODA</h1>
+        <h1>老达 LaoDa</h1>
         <p>产品设计师</p>
         <p>用心设计有目的、有细节的产品。欢迎联系合作。</p>
         <nav>
@@ -82,7 +182,6 @@
         </section>
     </main>
 
-    <!-- 修改后的模态框 -->
     <div id="project-modal" class="modal">
         <div class="modal-content">
             <span class="close-btn" onclick="closeModal()">&times;</span>
@@ -105,45 +204,52 @@
         const projects = [
             {
                 title: "和小莱莱一起学",
-                desc: "和小莱莱一起学《疯狂动物城》",
+                desc: "《疯狂动物城》",
                 thumb: "https://lailai-english.oss-cn-beijing.aliyuncs.com/LAILAIHome01.jpg",
-                full: "http://laoda.bond/LaiLai-English/"
+                full: "http://laoda.bond/LaiLai-English/",
+                type: "programme"
             },
             {
-                title: "单词正反闪卡",
+                title: "闪卡",
                 desc: "打印单词正反闪卡",
                 thumb: "https://lailai-english.oss-cn-beijing.aliyuncs.com/LaiLaiEnglishWordA.jpg",
-                full: "https://example.com/payper"
+                full: "https://example.com/payper",
+                type: "expositions"
             },
             {
-                title: "一天一句诗",
-                desc: "一天一句诗",
+                title: "Vipline",
+                desc: "企业级通信工具",
                 thumb: "https://via.placeholder.com/300x180?text=Vipline",
-                full: "https://example.com/vipline"
+                full: "https://example.com/vipline",
+                type: "artists"
             },
             {
-                title: "搜歌词",
-                desc: "1000 首歌词",
-                thumb: "https://via.placeholder.com/300x180?text=Matafy",
-                full: "https://example.com/matafy"
+                title: "Matafy",
+                desc: "数据分析仪表盘",
+                thumb: "https://via.placeholder.com/300x220?text=Matafy",
+                full: "https://example.com/matafy",
+                type: "workshops"
             },
             {
-                title: "王教练成绩记录",
-                desc: "（多人）记录",
-                thumb: "https://via.placeholder.com/300x180?text=Fleetsu",
-                full: "https://example.com/fleetsu"
+                title: "Fleetsu",
+                desc: "物流车队管理系统",
+                thumb: "https://via.placeholder.com/300x160?text=Fleetsu",
+                full: "https://example.com/fleetsu",
+                type: "visites"
             },
             {
                 title: "新项目 1",
                 desc: "项目 1 的简短描述",
-                thumb: "https://via.placeholder.com/300x180?text=新项目1",
-                full: "https://example.com/new1"
+                thumb: "https://via.placeholder.com/300x250?text=新项目1",
+                full: "https://example.com/new1",
+                type: "insoleuse"
             },
             {
                 title: "新项目 2",
                 desc: "项目 2 的简短描述",
-                thumb: "https://via.placeholder.com/300x180?text=新项目2",
-                full: "https://example.com/new2"
+                thumb: "https://via.placeholder.com/300x200?text=新项目2",
+                full: "https://example.com/new2",
+                type: "programme"
             }
         ];
 
@@ -153,6 +259,7 @@
             projects.forEach(project => {
                 const card = document.createElement('div');
                 card.className = 'project-card';
+                card.classList.add(`type-${project.type}`);
                 card.innerHTML = `
                     <img src="${project.thumb}" alt="${project.title}">
                     <h3>${project.title}</h3>
@@ -166,8 +273,7 @@
         function openModal(project) {
             document.getElementById('modal-title').textContent = project.title;
             document.getElementById('modal-desc').textContent = project.desc;
-            const linkEl = document.getElementById('modal-link');
-            linkEl.href = project.full;
+            document.getElementById('modal-link').href = project.full;
             document.getElementById('project-modal').style.display = 'flex';
         }
 
@@ -175,11 +281,15 @@
             document.getElementById('project-modal').style.display = 'none';
         }
 
-        document.getElementById('project-modal').onclick = (e) => {
+        document.getElementById('project-modal').addEventListener('click', (e) => {
             if (e.target === document.getElementById('project-modal')) {
                 closeModal();
             }
-        };
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
 
         window.onload = renderProjects;
     </script>
